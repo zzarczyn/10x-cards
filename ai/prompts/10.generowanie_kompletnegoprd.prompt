@@ -1,0 +1,159 @@
+Jesteś doświadczonym menedżerem produktu, którego zadaniem jest stworzenie kompleksowego dokumentu wymagań produktu (PRD) w oparciu o poniższe opisy:
+
+<project_description>
+### Główny problem
+Manualne tworzenie wysokiej jakości fiszek edukacyjnych jest czasochłonne, co zniechęca do korzystania z efektywnej metody nauki jaką jest spaced repetition.
+
+### Najmniejszy zestaw funkcjonalności
+- Generowanie fiszek przez AI na podstawie wprowadzonego tekstu (kopiuj-wklej)
+- Manualne tworzenie fiszek
+- Przeglądanie, edycja i usuwanie fiszek
+- Prosty system kont użytkowników do przechowywania fiszek
+- Integracja fiszek z gotowym algorytmem powtórek
+
+### Co NIE wchodzi w zakres MVP
+- Własny, zaawansowany algorytm powtórek (jak SuperMemo, Anki)
+- Import wielu formatów (PDF, DOCX, itp.)
+- Współdzielenie zestawów fiszek między użytkownikami
+- Integracje z innymi platformami edukacyjnymi
+- Aplikacje mobilne (na początek tylko web)
+
+### Kryteria sukcesu
+- 75% fiszek wygenerowanych przez AI jest akceptowane przez użytkownika
+- Użytkownicy tworzą 75% fiszek z wykorzystaniem AI
+
+</project_description>
+
+<project_details>
+<conversation_summary>
+<decisions>
+1. **Zakres MVP:** Skupienie wyłącznie na generowaniu fiszek przez AI oraz ich podstawowym przeglądaniu.
+2. **Algorytm:** Wykorzystanie biblioteki open-source implementującej SM-2 (SuperMemo-2) wyłącznie w celu przygotowania struktury danych w bazie; brak aktywnej sesji nauki w MVP.
+3. **Format fiszek:** Prosty tekst (Front/Back).
+4. **Input do AI:** Tekst o długości od 1000 do 10000 znaków.
+5. **Proces tworzenia:** Tekst -> Generowanie kandydatów (w pamięci) -> Recenzja użytkownika (akceptacja/edycja/odrzucenie) -> Zapis do bazy.
+6. **Organizacja danych:** Brak podziału na kategorie/talie ("jeden wspólny worek"). Tekst źródłowy nie jest zapisywany.
+7. **Zarządzanie fiszkami:** Lista fiszek z paginacją, możliwością odwracania (flip) oraz pełnym CRUD (edycja/usuwanie). Brak wyszukiwania i filtrowania.
+8. **Uwierzytelnianie:** Email + Hasło (gotowe rozwiązanie). Użytkownik niezalogowany widzi od razu formularz logowania.
+9. **UX/UI:** Język polski. Brak dostosowania pod urządzenia mobilne (tylko desktop).
+10. **Ustawienia AI:** Sztywne, uniwersalne (np. język wyjściowy taki sam jak źródłowy).
+11. **Zarządzanie błędami:** Brak automatycznego wznawiania przy błędach sieciowych/AI (użytkownik musi ponowić próbę ręcznie). Brak detekcji duplikatów (decyzja użytkownika).
+12. **Model biznesowy:** Brak limitów kosztowych w MVP.
+13. **Eksport:** Brak możliwości eksportu danych.
+</decisions>
+
+<matched_recommendations>
+1. Rekomendacja wykorzystania gotowej biblioteki SM-2 zamiast własnej implementacji.
+2. Wprowadzenie ekranu "Recenzji" (Review Mode) przed zapisem do bazy, umożliwiającego edycję i selekcję.
+3. Zastosowanie prostego formatu "Pytanie - Odpowiedź" bez skomplikowanych typów pytań.
+4. Ograniczenie interfejsu generatora do jednego pola i przycisku (sztywne ustawienia promptu).
+5. Wprowadzenie licznika znaków i walidacji minimalnej długości tekstu (przycisk "Generuj" nieaktywny poniżej limitu).
+6. Zastosowanie paginacji zamiast infinite scroll.
+7. Zapewnienie możliwości edycji i usuwania fiszek na głównej liście (CRUD).
+8. Pominięcie automatycznej detekcji duplikatów na rzecz weryfikacji manualnej przez użytkownika.
+</matched_recommendations>
+
+<prd_planning_summary>
+### Główne wymagania funkcjonalne (Functional Requirements)
+
+**1. Moduł Uwierzytelniania:**
+*   Logowanie i rejestracja za pomocą Email/Hasło.
+*   Brak dostępu dla niezalogowanych (Landing Page to formularz logowania).
+
+**2. Generator AI:**
+*   Input: Pole tekstowe przyjmujące 1000-10000 znaków.
+*   Walidacja: Blokada przycisku poniżej/powyżej limitu, licznik znaków.
+*   Output: Lista "kandydatów" na fiszki (Front/Back).
+*   Technologia: Dowolny LLM (podejście uniwersalne).
+
+**3. Moduł Recenzji (State in-memory):**
+*   Wyświetlanie listy wygenerowanych kandydatów.
+*   Możliwość edycji treści (Front/Back) każdego kandydata.
+*   Akcja akceptacji (zapis do bazy) lub odrzucenia.
+*   Brak zapisu stanu pośredniego (odświeżenie strony kasuje kandydatów).
+
+**4. Zarządzanie Fiszki (Baza Danych):**
+*   Widok listy zapisanych fiszek z paginacją.
+*   Interakcja: Odwracanie fiszki (podgląd rewersu) na liście.
+*   CRUD: Możliwość edycji treści i usuwania fiszek z poziomu listy.
+*   Dane: Fiszka zawiera pola `front`, `back` oraz pola techniczne algorytmu SM-2 (zainicjowane domyślnie).
+
+### Kluczowe Historie Użytkownika (User Stories)
+*   **Jako użytkownik**, chcę wkleić tekst notatki, aby AI automatycznie stworzyło dla mnie propozycje pytań i odpowiedzi.
+*   **Jako użytkownik**, chcę przejrzeć i poprawić wygenerowane fiszki przed ich zapisaniem, aby mieć pewność, że są poprawne merytorycznie.
+*   **Jako użytkownik**, chcę widzieć listę wszystkich moich fiszek i móc podejrzeć odpowiedź, aby zweryfikować swoją wiedzę (prymitywna forma nauki).
+*   **Jako użytkownik**, chcę usunąć błędną fiszkę z mojej listy, aby utrzymać porządek.
+
+### Kryteria Sukcesu (Success Metrics)
+*   **Jakość generacji:** 75% fiszek proponowanych przez AI jest akceptowanych przez użytkownika bez znaczących edycji.
+*   **Adopcja AI:** Użytkownicy tworzą 75% swoich fiszek z wykorzystaniem generatora AI (w stosunku do ręcznego tworzenia).
+
+### UX/UI Design
+*   Styl minimalistyczny, nastawiony na prostotę.
+*   Interfejs w języku polskim.
+*   Widok dostosowany wyłącznie do Desktop (brak RWD).
+</prd_planning_summary>
+
+<unresolved_issues>
+1. **Użyteczność algorytmu SM-2:** Zostały zdefiniowane wymagania co do pól bazy danych, ale bez modułu nauki (powtórek), pola te będą martwymi danymi w fazie MVP. Nie jest jasne, kiedy nastąpi implementacja logiki wykorzystującej te dane.
+2. **Ręczne tworzenie fiszek:** W pierwotnym opisie projektu widniało "Manualne tworzenie fiszek", ale w trakcie rozmowy skupiono się niemal wyłącznie na ścieżce AI. Należy doprecyzować, czy przycisk "Dodaj fiszkę ręcznie" (bez AI) ma istnieć w MVP.
+</unresolved_issues>
+</conversation_summary>
+</project_details>
+
+Wykonaj następujące kroki, aby stworzyć kompleksowy i dobrze zorganizowany dokument:
+
+1. Podziel PRD na następujące sekcje:
+   a. Przegląd projektu
+   b. Problem użytkownika
+   c. Wymagania funkcjonalne
+   d. Granice projektu
+   e. Historie użytkownika
+   f. Metryki sukcesu
+
+2. W każdej sekcji należy podać szczegółowe i istotne informacje w oparciu o opis projektu i odpowiedzi na pytania wyjaśniające. Upewnij się, że:
+   - Używasz jasnego i zwięzłego języka
+   - W razie potrzeby podajesz konkretne szczegóły i dane
+   - Zachowujesz spójność w całym dokumencie
+   - Odnosisz się do wszystkich punktów wymienionych w każdej sekcji
+
+3. Podczas tworzenia historyjek użytkownika i kryteriów akceptacji
+   - Wymień WSZYSTKIE niezbędne historyjki użytkownika, w tym scenariusze podstawowe, alternatywne i skrajne.
+   - Przypisz unikalny identyfikator wymagań (np. US-001) do każdej historyjki użytkownika w celu bezpośredniej identyfikowalności.
+   - Uwzględnij co najmniej jedną historię użytkownika specjalnie dla bezpiecznego dostępu lub uwierzytelniania, jeśli aplikacja wymaga identyfikacji użytkownika lub ograniczeń dostępu.
+   - Upewnij się, że żadna potencjalna interakcja użytkownika nie została pominięta.
+   - Upewnij się, że każda historia użytkownika jest testowalna.
+
+Użyj następującej struktury dla każdej historii użytkownika:
+- ID
+- Tytuł
+- Opis
+- Kryteria akceptacji
+
+4. Po ukończeniu PRD przejrzyj go pod kątem tej listy kontrolnej:
+   - Czy każdą historię użytkownika można przetestować?
+   - Czy kryteria akceptacji są jasne i konkretne?
+   - Czy mamy wystarczająco dużo historyjek użytkownika, aby zbudować w pełni funkcjonalną aplikację?
+   - Czy uwzględniliśmy wymagania dotyczące uwierzytelniania i autoryzacji (jeśli dotyczy)?
+
+5. Formatowanie PRD:
+   - Zachowaj spójne formatowanie i numerację.
+   - Nie używaj pogrubionego formatowania w markdown ( ** ).
+   - Wymień WSZYSTKIE historyjki użytkownika.
+   - Sformatuj PRD w poprawnym markdown.
+
+Przygotuj PRD z następującą strukturą:
+
+```markdown
+# Dokument wymagań produktu (PRD) - {{app-name}}
+## 1. Przegląd produktu
+## 2. Problem użytkownika
+## 3. Wymagania funkcjonalne
+## 4. Granice produktu
+## 5. Historyjki użytkowników
+## 6. Metryki sukcesu
+```
+
+Pamiętaj, aby wypełnić każdą sekcję szczegółowymi, istotnymi informacjami w oparciu o opis projektu i nasze pytania wyjaśniające. Upewnij się, że PRD jest wyczerpujący, jasny i zawiera wszystkie istotne informacje potrzebne do dalszej pracy nad produktem.
+
+Ostateczny wynik powinien składać się wyłącznie z PRD zgodnego ze wskazanym formatem w markdown, który zapiszesz w pliku .ai/prd.md
