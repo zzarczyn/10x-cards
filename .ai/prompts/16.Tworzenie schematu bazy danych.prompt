@@ -1,0 +1,98 @@
+Jesteś architektem baz danych, którego zadaniem jest stworzenie schematu bazy danych PostgreSQL na podstawie informacji dostarczonych z sesji planowania, dokumentu wymagań produktu (PRD) i stacku technologicznym. Twoim celem jest zaprojektowanie wydajnej i skalowalnej struktury bazy danych, która spełnia wymagania projektu.
+
+1. <prd>
+@prd.md
+</prd>
+
+Jest to dokument wymagań produktu, który określa cechy, funkcjonalności i wymagania projektu.
+
+2. <session_notes>
+<conversation_summary>
+<decisions>
+1. **Główna encja**: Tabela `flashcards` będzie głównym miejscem przechowywania danych, powiązanym z `auth.users` poprzez `user_id` (UUID).
+2. **Struktura**: Przyjęto płaską strukturę danych – brak obsługi talii (decków) czy kategorii w MVP.
+3. **Typy danych treści**: Treść fiszek ograniczona do `VARCHAR(200)` dla przodu i `VARCHAR(500)` dla tyłu, bez możliwości wartości NULL.
+4. **Metadane pochodzenia**: Wprowadzenie typu ENUM `card_source_type` (`ai-full`, `ai-edited`, `manual`) do oznaczania źródła fiszki.
+5. **Logowanie generacji**: Utworzenie dodatkowej tabeli `generations` do celów analitycznych (czas, model, liczba fiszek).
+6. **Relacje**: `flashcards` powiązane z `generations` relacją opcjonalną (nullable `generation_id`) z zasadą `ON DELETE SET NULL`.
+7. **Brak wersji roboczych**: Kandydaci na fiszki (drafty) istnieją tylko w pamięci przeglądarki, nie w bazie.
+8. **Strategia usuwania**: Zastosowanie trwałego usuwania rekordów (Hard Delete) zamiast Soft Delete.
+9. **Klucze główne**: Użycie UUID z `gen_random_uuid()` dla wszystkich kluczy głównych.
+10. **Automatyzacja**: Wykorzystanie triggera `moddatetime` do aktualizacji pola `updated_at`.
+</decisions>
+
+<matched_recommendations>
+1. Wykorzystanie tabeli `auth.users` z Supabase jako jedynego źródła tożsamości (brak osobnej tabeli `profiles`).
+2. Implementacja ścisłego Row Level Security (RLS) wymuszającego zgodność `auth.uid() = user_id` dla obu tabel.
+3. Utworzenie indeksu złożonego `(user_id, created_at DESC)` dla optymalizacji paginacji.
+4. Zastosowanie natywnego typu ENUM zamiast ograniczeń tekstowych `CHECK`.
+5. Użycie konkretnych typów `VARCHAR` zamiast ogólnego `TEXT` dla lepszej definicji schematu.
+6. Oddzielenie logiki generowania (tabela `generations`) od samej treści, aby nie przechowywać tekstu źródłowego w głównej tabeli.
+</matched_recommendations>
+
+<database_planning_summary>
+Zaplanowany schemat bazy danych dla MVP 10xCards opiera się na dwóch tabelach w schema `public`: `flashcards` oraz `generations`, ściśle zintegrowanych z systemem uwierzytelniania Supabase (`auth`).
+
+**1. Kluczowe Encje i Atrybuty:**
+*   **`flashcards`**: Przechowuje właściwe fiszki.
+    *   Kolumny: `id` (UUID), `user_id` (UUID), `front` (VARCHAR 200), `back` (VARCHAR 500), `source` (ENUM), `generation_id` (UUID, nullable), `created_at`, `updated_at`.
+*   **`generations`**: Przechowuje historię użycia AI.
+    *   Kolumny: `id` (UUID), `user_id` (UUID), `duration_ms` (INT), `card_count` (INT), `model_name` (VARCHAR 100), `created_at`.
+
+**2. Relacje:**
+*   `auth.users` -> `flashcards` (1:N): Kaskadowe usuwanie fiszek po usunięciu użytkownika.
+*   `auth.users` -> `generations` (1:N): Kaskadowe usuwanie historii po usunięciu użytkownika.
+*   `generations` -> `flashcards` (1:N, opcjonalna): Jeśli log generacji zostanie usunięty, pole `generation_id` w fiszce przyjmie wartość NULL (zachowanie treści).
+
+**3. Bezpieczeństwo i Wydajność:**
+*   **RLS**: Pełna izolacja danych. Użytkownik ma dostęp CRUD tylko do rekordów, gdzie `user_id` jest zgodne z jego UID sesji.
+*   **Indeksowanie**: Kluczowy indeks `(user_id, created_at DESC)` zapewni szybkie ładowanie listy fiszek ("Moja kolekcja") przy rosnącej liczbie rekordów.
+
+**4. Funkcje specyficzne dla PostgreSQL:**
+*   Rozszerzenie `moddatetime` dla automatyzacji timestampów.
+*   Funkcja `gen_random_uuid()` dla generowania kluczy.
+</database_planning_summary>
+
+<unresolved_issues>
+Brak zidentyfikowanych otwartych kwestii. Zebrane informacje są kompletne i wystarczające do wygenerowania pełnego pliku migracji SQL (Schema, RLS, Triggers, Indexes) dla PostgreSQL w środowisku Supabase.
+</unresolved_issues>
+</conversation_summary>
+
+</session_notes>
+
+Są to notatki z sesji planowania schematu bazy danych. Mogą one zawierać ważne decyzje, rozważania i konkretne wymagania omówione podczas spotkania.
+
+3. <tech_stack>
+@tech-stack.md
+</tech_stack>
+
+Opisuje stack technologiczny, który zostanie wykorzystany w projekcie, co może wpłynąć na decyzje dotyczące projektu bazy danych.
+
+Wykonaj następujące kroki, aby utworzyć schemat bazy danych:
+
+1. Dokładnie przeanalizuj notatki z sesji, identyfikując kluczowe jednostki, atrybuty i relacje omawiane podczas sesji planowania.
+2. Przejrzyj PRD, aby upewnić się, że wszystkie wymagane funkcje i funkcjonalności są obsługiwane przez schemat bazy danych.
+3. Przeanalizuj stack technologiczny i upewnij się, że projekt bazy danych jest zoptymalizowany pod kątem wybranych technologii.
+
+4. Stworzenie kompleksowego schematu bazy danych, który obejmuje
+   a. Tabele z odpowiednimi nazwami kolumn i typami danych
+   b. Klucze podstawowe i klucze obce
+   c. Indeksy poprawiające wydajność zapytań
+   d. Wszelkie niezbędne ograniczenia (np. unikalność, not null)
+
+5. Zdefiniuj relacje między tabelami, określając kardynalność (jeden-do-jednego, jeden-do-wielu, wiele-do-wielu) i wszelkie tabele łączące wymagane dla relacji wiele-do-wielu.
+
+6. Opracowanie zasad PostgreSQL dla zabezpieczeń na poziomie wiersza (RLS), jeśli dotyczy, w oparciu o wymagania określone w notatkach z sesji lub PRD.
+
+7. Upewnij się, że schemat jest zgodny z najlepszymi praktykami projektowania baz danych, w tym normalizacji do odpowiedniego poziomu (zwykle 3NF, chyba że denormalizacja jest uzasadniona ze względu na wydajność).
+
+Ostateczny wynik powinien mieć następującą strukturę:
+```markdown
+1. Lista tabel z ich kolumnami, typami danych i ograniczeniami
+2. Relacje między tabelami
+3. Indeksy
+4. Zasady PostgreSQL (jeśli dotyczy)
+5. Wszelkie dodatkowe uwagi lub wyjaśnienia dotyczące decyzji projektowych
+```
+
+W odpowiedzi należy podać tylko ostateczny schemat bazy danych w formacie markdown, który zapiszesz w pliku .ai/db-plan.md bez uwzględniania procesu myślowego lub kroków pośrednich. Upewnij się, że schemat jest kompleksowy, dobrze zorganizowany i gotowy do wykorzystania jako podstawa do tworzenia migracji baz danych.

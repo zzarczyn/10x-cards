@@ -38,7 +38,7 @@ Follow these instructions to get a local copy of the project up and running.
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/zzarczyn/10x-cards.git
-    cd 10xCards
+    cd 10x-cards
     ```
 
 2.  **Install dependencies:**
