@@ -47,15 +47,33 @@ Follow these instructions to get a local copy of the project up and running.
     ```
 
 3.  **Environment Setup:**
-    Create a `.env` file in the root directory based on `.env.example`. You will need credentials for:
-    - Supabase (`PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY`)
-    - OpenRouter (`OPENROUTER_API_KEY`)
+    Create a `.env` file in the root directory with the following variables:
+    
+    ```env
+    # Supabase Configuration
+    SUPABASE_URL=https://your-project.supabase.co
+    SUPABASE_KEY=your-anon-public-key-here
+    
+    # OpenRouter API Configuration
+    OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
+    OPENROUTER_MODEL=anthropic/claude-3.5-sonnet
+    ```
+    
+    **Where to get these credentials:**
+    - **Supabase:** Get `SUPABASE_URL` and `SUPABASE_KEY` from your [Supabase project settings](https://app.supabase.com/project/_/settings/api)
+    - **OpenRouter:** Get your API key from [OpenRouter Keys](https://openrouter.ai/keys)
+    - **Model:** See available models at [OpenRouter Models](https://openrouter.ai/models)
 
-4.  **Run the development server:**
+4.  **Run database migrations:**
+    ```bash
+    npx supabase db push
+    ```
+
+5.  **Run the development server:**
     ```bash
     npm run dev
     ```
-    The application should now be running at `http://localhost:4321`.
+    The application should now be running at `http://localhost:3000`.
 
 ## Available Scripts
 
@@ -83,11 +101,81 @@ Follow these instructions to get a local copy of the project up and running.
 - **Mobile Responsiveness:** Not optimized for mobile devices.
 - **Social Features:** No sharing or public profiles.
 
+## Testing
+
+### API Endpoint Testing
+
+The project includes comprehensive testing documentation for API endpoints:
+
+#### Flashcard Generation (POST /api/flashcards/generate)
+- **Testing Guide:** See `.ai/testing-guide-generate-endpoint.md` for detailed manual testing instructions
+- **Test Script:** Run `.ai/test-generate-endpoint.sh <SESSION_TOKEN>` for automated endpoint testing
+
+#### Flashcard Creation (POST /api/flashcards)
+- **Test Results:** See `.ai/test-flashcards-endpoint.md` for test case documentation
+- **Test Script:** Run `.ai/test-flashcards-endpoint.sh` for automated endpoint testing (requires JWT token and generation_id)
+
+**Quick Test:**
+
+```bash
+# 1. Start the dev server
+npm run dev
+
+# 2. Get your JWT token (log in via browser, check Authorization header)
+
+# 3. Generate flashcards (to get generation_id)
+# Use POST /api/flashcards/generate
+
+# 4. Test flashcard creation
+bash .ai/test-flashcards-endpoint.sh
+```
+
+### Database Verification
+
+After testing endpoints, verify data in Supabase:
+
+```sql
+-- Check recent generations
+SELECT * FROM public.generations 
+ORDER BY created_at DESC 
+LIMIT 5;
+
+-- Check created flashcards
+SELECT id, user_id, front, back, source, generation_id, created_at
+FROM public.flashcards
+ORDER BY created_at DESC
+LIMIT 10;
+
+-- Verify flashcard-generation linkage
+SELECT f.id, f.front, f.source, f.generation_id, g.card_count
+FROM flashcards f
+LEFT JOIN generations g ON f.generation_id = g.id
+WHERE f.generation_id IS NOT NULL;
+```
+
 ## Project Status
 
 🚧 **In Development (MVP Phase)**
 
 The project is currently in the active development phase, focusing on implementing the core AI generation flow and user management systems.
+
+### Implemented Features
+- ✅ Database schema (flashcards, generations tables)
+- ✅ Authentication middleware (Supabase Auth)
+- ✅ POST /api/flashcards/generate endpoint (AI generation)
+- ✅ POST /api/flashcards endpoint (Create flashcard)
+- ✅ AI flashcard generation service (OpenRouter integration)
+- ✅ Flashcard management service (CRUD operations)
+- ✅ Comprehensive error handling and validation
+
+### Next Steps
+- 🔲 Frontend: Generator UI component
+- 🔲 Frontend: Review mode for AI suggestions
+- 🔲 GET /api/flashcards endpoint (List flashcards)
+- 🔲 GET /api/flashcards/:id endpoint (Get single flashcard)
+- 🔲 PUT /api/flashcards/:id endpoint (Update flashcard)
+- 🔲 DELETE /api/flashcards/:id endpoint (Delete flashcard)
+- 🔲 Dashboard for viewing saved flashcards
 
 ## License
 
