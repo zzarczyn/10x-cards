@@ -1,0 +1,30 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { RegisterForm } from "../../components/auth/RegisterForm";
+
+// TODO: When backend is ready, check if user is already logged in and redirect
+// const session = await Astro.locals.supabase?.auth.getSession();
+// if (session?.data?.session) {
+//   return Astro.redirect('/');
+// }
+---
+
+<Layout title="10xCards - Rejestracja">
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8">
+    <!-- Branding/Logo -->
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold mb-2">10xCards</h1>
+      <p class="text-muted-foreground">Twórz fiszki szybciej dzięki AI</p>
+    </div>
+
+    <!-- Auth Card -->
+    <div class="w-full max-w-[420px] bg-card border border-border rounded-lg shadow-sm p-8">
+      <RegisterForm client:load />
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-center">
+      <p class="text-sm text-muted-foreground">&copy; 2025 10xCards</p>
+    </div>
+  </div>
+</Layout>

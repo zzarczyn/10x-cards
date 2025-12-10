@@ -1,11 +1,11 @@
 /**
  * Type definitions for OpenRouter API integration
- * 
+ *
  * This file contains all interfaces and types used for communication
  * with OpenRouter API, including request/response structures and configuration.
  */
 
-import type { z } from 'zod';
+import type { z } from "zod";
 
 /**
  * OpenRouter service configuration
@@ -24,7 +24,7 @@ export interface OpenRouterConfig {
 /**
  * Message role in chat conversation
  */
-export type MessageRole = 'system' | 'user' | 'assistant';
+export type MessageRole = "system" | "user" | "assistant";
 
 /**
  * Single message in the chat completion request
@@ -50,7 +50,7 @@ export interface JsonSchemaDefinition {
  * Response format configuration for structured outputs
  */
 export interface ResponseFormat {
-  type: 'json_schema';
+  type: "json_schema";
   json_schema: JsonSchemaDefinition;
 }
 
@@ -90,7 +90,7 @@ export interface CompletionResponse {
   id: string;
   model: string;
   created: number;
-  choices: Array<{
+  choices: {
     index: number;
     message: {
       role: string;
@@ -98,7 +98,7 @@ export interface CompletionResponse {
       refusal?: string;
     };
     finish_reason: string;
-  }>;
+  }[];
   usage?: {
     prompt_tokens: number;
     completion_tokens: number;
@@ -116,4 +116,3 @@ export interface OpenRouterAPIErrorResponse {
     code?: string;
   };
 }
-

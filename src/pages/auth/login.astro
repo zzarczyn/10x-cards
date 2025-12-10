@@ -1,0 +1,83 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { LoginForm } from "../../components/auth/LoginForm";
+
+// TODO: When backend is ready, check if user is already logged in and redirect
+// const session = await Astro.locals.supabase?.auth.getSession();
+// if (session?.data?.session) {
+//   return Astro.redirect('/');
+// }
+
+// Read query params for messages
+const url = new URL(Astro.request.url);
+const message = url.searchParams.get("message");
+const error = url.searchParams.get("error");
+
+// Map message codes to user-friendly messages
+const messageMap: Record<string, { type: "success" | "error"; text: string }> = {
+  registered: {
+    type: "success",
+    text: "Konto zostało utworzone! Sprawdź swoją skrzynkę email i potwierdź adres przed zalogowaniem.",
+  },
+  "email-confirmed": {
+    type: "success",
+    text: "Twój email został potwierdzony! Możesz się teraz zalogować.",
+  },
+  "password-reset": {
+    type: "success",
+    text: "Hasło zostało zmienione. Możesz się teraz zalogować używając nowego hasła.",
+  },
+};
+
+const errorMap: Record<string, string> = {
+  "invalid-callback": "Link weryfikacyjny jest nieprawidłowy.",
+  "verification-failed": "Weryfikacja nie powiodła się. Spróbuj ponownie.",
+  unknown: "Wystąpił nieoczekiwany błąd.",
+};
+
+const displayMessage = message && messageMap[message];
+const displayError = error && errorMap[error];
+---
+
+<Layout title="10xCards - Logowanie">
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8">
+    <!-- Branding/Logo -->
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold mb-2">10xCards</h1>
+      <p class="text-muted-foreground">Twórz fiszki szybciej dzięki AI</p>
+    </div>
+
+    <!-- Auth Card -->
+    <div class="w-full max-w-[420px] bg-card border border-border rounded-lg shadow-sm p-8">
+      {
+        displayMessage && (
+          <div
+            class={`mb-6 rounded-md px-4 py-3 text-sm ${
+              displayMessage.type === "success"
+                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                : "bg-destructive/15 text-destructive"
+            }`}
+            role="alert"
+          >
+            {displayMessage.text}
+          </div>
+        )
+      }
+
+      {
+        displayError && (
+          <div class="mb-6 rounded-md bg-destructive/15 px-4 py-3 text-sm text-destructive" role="alert">
+            {displayError}
+          </div>
+        )
+      }
+
+      <LoginForm client:load />
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-center">
+      <p class="text-sm text-muted-foreground">&copy; 2025 10xCards</p>
+    </div>
+  </div>
+</Layout>

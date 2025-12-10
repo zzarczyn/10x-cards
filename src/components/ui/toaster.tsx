@@ -1,11 +1,4 @@
-import {
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastProvider,
-  ToastTitle,
-  ToastViewport,
-} from "./toast";
+import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "./toast";
 import { useToast } from "../hooks/useToast";
 
 export function Toaster() {
@@ -29,4 +22,3 @@ export function Toaster() {
     </ToastProvider>
   );
 }
-

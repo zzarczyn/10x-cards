@@ -98,8 +98,7 @@ export function useGenerator() {
         description: `Utworzono ${data.card_count} ${data.card_count === 1 ? "fiszkę" : data.card_count < 5 ? "fiszki" : "fiszek"}. Możesz je teraz edytować i zapisać.`,
       });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Wystąpił nieoczekiwany błąd";
+      const errorMessage = error instanceof Error ? error.message : "Wystąpił nieoczekiwany błąd";
 
       setState((prev) => ({
         ...prev,
@@ -194,40 +193,40 @@ export function useGenerator() {
           throw new Error(errorData.message || "Nie udało się zapisać fiszki");
         }
 
-      await response.json();
+        await response.json();
 
-      // Remove card from list on success (US-005: "usuwa ją z listy propozycji")
-      setState((prev) => ({
-        ...prev,
-        flashcards: prev.flashcards.filter((c) => c.id !== id),
-      }));
+        // Remove card from list on success (US-005: "usuwa ją z listy propozycji")
+        setState((prev) => ({
+          ...prev,
+          flashcards: prev.flashcards.filter((c) => c.id !== id),
+        }));
 
-      toast({
-        title: "✅ Fiszka zapisana",
-        description: "Fiszka została dodana do bazy wiedzy.",
-      });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Wystąpił błąd";
+        toast({
+          title: "✅ Fiszka zapisana",
+          description: "Fiszka została dodana do bazy wiedzy.",
+        });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Wystąpił błąd";
 
-      setState((prev) => ({
-        ...prev,
-        flashcards: prev.flashcards.map((c) =>
-          c.id === id
-            ? {
-                ...c,
-                status: "error",
-                errorMessage,
-              }
-            : c
-        ),
-      }));
+        setState((prev) => ({
+          ...prev,
+          flashcards: prev.flashcards.map((c) =>
+            c.id === id
+              ? {
+                  ...c,
+                  status: "error",
+                  errorMessage,
+                }
+              : c
+          ),
+        }));
 
-      toast({
-        variant: "destructive",
-        title: "❌ Błąd zapisu",
-        description: errorMessage,
-      });
-    }
+        toast({
+          variant: "destructive",
+          title: "❌ Błąd zapisu",
+          description: errorMessage,
+        });
+      }
     },
     [state.flashcards]
   );
