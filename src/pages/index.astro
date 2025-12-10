@@ -11,10 +11,10 @@ if (!session) {
   return Astro.redirect("/auth/login");
 }
 
-// Get user email for future use (e.g., UserMenu component)
+// Get user email for UserMenu component
 const userEmail = session.user.email ?? "";
 ---
 
 <Layout>
-  <Dashboard client:load />
+  <Dashboard client:load userEmail={userEmail} />
 </Layout>

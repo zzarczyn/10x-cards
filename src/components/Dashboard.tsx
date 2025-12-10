@@ -2,6 +2,7 @@ import { useGenerator } from "./hooks/useGenerator";
 import { GeneratorTab } from "./GeneratorTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { Toaster } from "./ui/toaster";
+import { UserMenu } from "./auth/UserMenu";
 
 /**
  * Main Dashboard component
@@ -10,17 +11,25 @@ import { Toaster } from "./ui/toaster";
  * - Tab navigation (Generator / Baza Wiedzy)
  * - State management for Generator tab (lifted to preserve state on tab switch)
  * - Integration with useGenerator hook
+ * - User authentication display with logout
  * - Toast notifications
  */
-export function Dashboard() {
+interface DashboardProps {
+  userEmail: string;
+}
+
+export function Dashboard({ userEmail }: DashboardProps) {
   const { state, actions } = useGenerator();
 
   return (
     <div className="container max-w-5xl mx-auto px-4 py-8">
       {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">10xCards</h1>
-        <p className="text-muted-foreground mt-2">Twórz fiszki szybciej dzięki AI</p>
+      <header className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">10xCards</h1>
+          <p className="text-muted-foreground mt-2">Twórz fiszki szybciej dzięki AI</p>
+        </div>
+        <UserMenu userEmail={userEmail} />
       </header>
 
       {/* Tabs */}

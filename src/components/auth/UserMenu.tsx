@@ -1,166 +1,140 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
-
-interface UserMenuProps {
-  userEmail: string;
-}
+import type { UserMenuProps } from "../../types";
 
 /**
- * User menu component
- * Displays logged-in user information and logout button
- *
+ * UserMenu component
+ * 
+ * Displays user information and logout functionality in Dashboard header
+ * 
  * Features:
  * - User email display (truncated if too long)
- * - Dropdown menu with logout option
- * - Accessible keyboard navigation
+ * - User avatar icon
+ * - Logout button with loading state
+ * - Handles logout API call and redirect
+ * 
+ * Position: Top-right corner of Dashboard
  */
 export function UserMenu({ userEmail }: UserMenuProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  /**
+   * Truncates email if longer than maxLength
+   * Example: "verylongemailaddress@example.com" → "verylonge...@example.com"
+   */
+  const truncateEmail = (email: string, maxLength = 25): string => {
+    if (email.length <= maxLength) return email;
+
+    const [localPart, domain] = email.split("@");
+    const maxLocalLength = maxLength - domain.length - 4; // -4 for "...@"
+
+    if (localPart.length > maxLocalLength) {
+      return `${localPart.substring(0, maxLocalLength)}...@${domain}`;
+    }
+
+    return email;
+  };
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
 
-    // TODO: Call API endpoint when backend is ready
-    setTimeout(() => {
-      // window.location.href = '/auth/login';
-      // TODO: Backend - uncomment redirect above
-      setIsLoggingOut(false);
-    }, 1000);
-
-    /* Future implementation:
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
       });
 
       if (response.ok) {
-        window.location.href = '/auth/login';
+        // Force page reload and redirect to login
+        // This ensures all client state is cleared
+        window.location.href = "/auth/login";
       } else {
-        console.error('Logout failed');
-        setIsLoggingOut(false);
+        // Even if request fails, redirect to login
+        // User will be logged out client-side anyway
+        console.error("Logout request failed, redirecting anyway");
+        window.location.href = "/auth/login";
       }
-    } catch (err) {
-      console.error('Logout error:', err);
-      setIsLoggingOut(false);
+    } catch (error) {
+      // Network error - still redirect to login
+      console.error("Logout error:", error);
+      window.location.href = "/auth/login";
     }
-    */
   };
 
-  // Truncate email if too long
-  const displayEmail = userEmail.length > 25 ? `${userEmail.substring(0, 22)}...` : userEmail;
-
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent transition-colors"
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-      >
-        {/* Avatar placeholder */}
-        <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center">
+    <div className="flex items-center gap-3">
+      {/* User Info */}
+      <div className="flex items-center gap-2">
+        {/* User Avatar Icon */}
+        <div
+          className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary"
+          aria-hidden="true"
+        >
           <svg
-            className="size-5 text-primary"
             xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="size-5"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
+            <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
           </svg>
         </div>
 
-        {/* Email */}
-        <div className="hidden sm:flex flex-col items-start">
-          <span className="text-sm font-medium">{displayEmail}</span>
-        </div>
+        {/* User Email */}
+        <span className="text-sm text-muted-foreground" title={userEmail}>
+          {truncateEmail(userEmail)}
+        </span>
+      </div>
 
-        {/* Chevron icon */}
-        <svg
-          className={`size-4 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {/* Dropdown menu */}
-      {isOpen && (
-        <>
-          {/* Backdrop for closing menu */}
-          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} aria-hidden="true" />
-
-          {/* Menu content */}
-          <div
-            className="absolute right-0 mt-2 w-56 rounded-md border bg-card shadow-lg z-20"
-            role="menu"
-            aria-orientation="vertical"
-          >
-            <div className="p-2">
-              {/* User info on mobile */}
-              <div className="sm:hidden px-3 py-2 mb-2 border-b">
-                <p className="text-sm font-medium">{userEmail}</p>
-              </div>
-
-              {/* Logout button */}
-              <Button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                variant="ghost"
-                className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-                role="menuitem"
-              >
-                {isLoggingOut ? (
-                  <>
-                    <svg
-                      className="animate-spin size-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Wylogowywanie...
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="size-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                      />
-                    </svg>
-                    Wyloguj się
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-        </>
-      )}
+      {/* Logout Button */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleLogout}
+        disabled={isLoggingOut}
+        aria-label="Wyloguj się"
+      >
+        {isLoggingOut ? (
+          <>
+            <svg
+              className="mr-2 size-4 animate-spin"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            Wylogowywanie...
+          </>
+        ) : (
+          <>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="mr-2 size-4"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z"
+                clipRule="evenodd"
+              />
+              <path
+                fillRule="evenodd"
+                d="M6 10a.75.75 0 01.75-.75h9.546l-1.048-.943a.75.75 0 111.004-1.114l2.5 2.25a.75.75 0 010 1.114l-2.5 2.25a.75.75 0 11-1.004-1.114l1.048-.943H6.75A.75.75 0 016 10z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Wyloguj się
+          </>
+        )}
+      </Button>
     </div>
   );
 }

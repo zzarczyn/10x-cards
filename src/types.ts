@@ -169,6 +169,60 @@ export interface AnalyticsMetricsDTO {
 }
 
 // ============================================================================
+// Authentication - DTOs
+// ============================================================================
+
+/**
+ * Response from login endpoint
+ */
+export interface LoginResponseDTO {
+  success: true;
+  user: {
+    id: string;
+    email: string;
+  };
+}
+
+/**
+ * Response from register endpoint
+ */
+export interface RegisterResponseDTO {
+  success: true;
+  message: string;
+  userId: string;
+}
+
+/**
+ * Response from logout endpoint
+ */
+export interface LogoutResponseDTO {
+  success: true;
+}
+
+/**
+ * Response from forgot password endpoint
+ */
+export interface ForgotPasswordResponseDTO {
+  success: true;
+  message: string;
+}
+
+/**
+ * Response from reset password endpoint
+ */
+export interface ResetPasswordResponseDTO {
+  success: true;
+  message: string;
+}
+
+/**
+ * Props for UserMenu component
+ */
+export interface UserMenuProps {
+  userEmail: string;
+}
+
+// ============================================================================
 // Error Response Types
 // ============================================================================
 
