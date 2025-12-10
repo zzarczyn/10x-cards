@@ -65,7 +65,7 @@ export class OpenRouterService {
       apiKey: config.apiKey,
       siteUrl: config.siteUrl,
       siteName: config.siteName,
-      defaultModel: config.defaultModel || "google/gemini-2.0-flash-exp:free",
+      defaultModel: config.defaultModel || "openai/gpt-oss-20b",
     };
   }
 

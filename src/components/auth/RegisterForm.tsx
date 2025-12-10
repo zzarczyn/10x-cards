@@ -112,54 +112,37 @@ export function RegisterForm() {
 
     setFormState((prev) => ({ ...prev, isLoading: true }));
 
-    // TODO: Call API endpoint when backend is ready
-    // For now, just simulate success
-    setTimeout(() => {
-      setFormState((prev) => ({
-        ...prev,
-        isLoading: false,
-        isSuccess: true,
-      }));
-
-      // Simulate redirect after showing success message
-      setTimeout(() => {
-        // window.location.href = '/auth/login?message=registered';
-        // TODO: Backend - uncomment redirect above
-      }, 3000);
-    }, 1000);
-
-    /* Future implementation:
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          email: formState.email, 
-          password: formState.password 
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formState.email,
+          password: formState.password,
         }),
       });
 
       if (response.ok) {
-        setFormState(prev => ({ ...prev, isSuccess: true, isLoading: false }));
+        setFormState((prev) => ({ ...prev, isSuccess: true, isLoading: false }));
+        // Show success message for 3 seconds, then redirect
         setTimeout(() => {
-          window.location.href = '/auth/login?message=registered';
+          window.location.href = "/auth/login?message=registered";
         }, 3000);
       } else {
         const errorData = await response.json();
-        setFormState(prev => ({
+        setFormState((prev) => ({
           ...prev,
-          error: errorData.message || 'Błąd rejestracji',
+          error: errorData.message || "Błąd rejestracji",
           isLoading: false,
         }));
       }
     } catch (err) {
-      setFormState(prev => ({
+      setFormState((prev) => ({
         ...prev,
-        error: 'Wystąpił błąd połączenia. Spróbuj ponownie.',
+        error: "Wystąpił błąd połączenia. Spróbuj ponownie.",
         isLoading: false,
       }));
     }
-    */
   };
 
   const passwordStrength = calculatePasswordStrength(formState.password);
