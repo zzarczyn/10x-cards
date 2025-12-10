@@ -81,45 +81,34 @@ export function LoginForm() {
 
     setFormState((prev) => ({ ...prev, isLoading: true }));
 
-    // TODO: Call API endpoint when backend is ready
-    // For now, just simulate a delay
-    setTimeout(() => {
-      setFormState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: "Backend nie został jeszcze zaimplementowany",
-      }));
-    }, 1000);
-
-    /* Future implementation:
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          email: formState.email, 
-          password: formState.password 
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formState.email,
+          password: formState.password,
         }),
       });
 
       if (response.ok) {
-        window.location.href = '/';
+        // Success: force page reload to update auth state
+        window.location.href = "/";
       } else {
         const errorData = await response.json();
-        setFormState(prev => ({
+        setFormState((prev) => ({
           ...prev,
-          error: errorData.message || 'Błąd logowania',
+          error: errorData.message || "Błąd logowania",
           isLoading: false,
         }));
       }
     } catch (err) {
-      setFormState(prev => ({
+      setFormState((prev) => ({
         ...prev,
-        error: 'Wystąpił błąd połączenia. Spróbuj ponownie.',
+        error: "Wystąpił błąd połączenia. Spróbuj ponownie.",
         isLoading: false,
       }));
     }
-    */
   };
 
   const handleEmailChange = (value: string) => {

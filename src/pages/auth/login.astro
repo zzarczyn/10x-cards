@@ -2,11 +2,14 @@
 import Layout from "../../layouts/Layout.astro";
 import { LoginForm } from "../../components/auth/LoginForm";
 
-// TODO: When backend is ready, check if user is already logged in and redirect
-// const session = await Astro.locals.supabase?.auth.getSession();
-// if (session?.data?.session) {
-//   return Astro.redirect('/');
-// }
+// Check if user is already logged in and redirect to dashboard
+const {
+  data: { session },
+} = await Astro.locals.supabase.auth.getSession();
+
+if (session) {
+  return Astro.redirect("/");
+}
 
 // Read query params for messages
 const url = new URL(Astro.request.url);

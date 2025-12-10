@@ -1,22 +1,56 @@
 import { defineMiddleware } from "astro:middleware";
 
-import { supabaseClient } from "../db/supabase.client.ts";
+import { createSupabaseServerInstance } from "../db/supabase.client.ts";
+
+/**
+ * Public paths that don't require authentication
+ * - Auth pages (login, register, etc.)
+ * - Auth API endpoints
+ */
+const PUBLIC_PATHS = [
+  // Auth pages
+  "/auth/login",
+  "/auth/register",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  // Auth API endpoints
+  "/api/auth/login",
+  "/api/auth/register",
+  "/api/auth/logout",
+  "/api/auth/forgot-password",
+  "/api/auth/reset-password",
+  "/api/auth/callback",
+];
 
 /**
  * Global middleware for Astro
- * - Adds Supabase client to context
- * - Validates authentication for API endpoints
+ * - Creates Supabase client with cookie-based session
+ * - Validates authentication for protected API endpoints
+ * - Adds user to context for authenticated requests
  */
 export const onRequest = defineMiddleware(async (context, next) => {
-  // Add Supabase client to context for all requests
-  context.locals.supabase = supabaseClient;
+  // Create Supabase instance with cookie handling
+  // This automatically manages session from cookies
+  const supabase = createSupabaseServerInstance({
+    cookies: context.cookies,
+    headers: context.request.headers,
+  });
 
-  // For API endpoints, enforce authentication
+  // Add Supabase client to context for all requests
+  context.locals.supabase = supabase;
+
+  // For API endpoints, enforce authentication (except public paths)
   if (context.url.pathname.startsWith("/api/")) {
+    // Skip auth check for public API endpoints
+    if (PUBLIC_PATHS.includes(context.url.pathname)) {
+      return next();
+    }
+
+    // Check authentication for protected API endpoints
     const {
       data: { user },
       error,
-    } = await context.locals.supabase.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (error || !user) {
       return new Response(
@@ -27,7 +61,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
         {
           status: 401,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
 

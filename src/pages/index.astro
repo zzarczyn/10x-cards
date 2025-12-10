@@ -1,6 +1,18 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { Dashboard } from "../components/Dashboard";
+
+// Protect Dashboard - require authentication
+const {
+  data: { session },
+} = await Astro.locals.supabase.auth.getSession();
+
+if (!session) {
+  return Astro.redirect("/auth/login");
+}
+
+// Get user email for future use (e.g., UserMenu component)
+const userEmail = session.user.email ?? "";
 ---
 
 <Layout>
