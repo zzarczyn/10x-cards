@@ -1,5 +1,6 @@
 import { useGenerator } from "./hooks/useGenerator";
 import { GeneratorTab } from "./GeneratorTab";
+import { KnowledgeBaseTab } from "./KnowledgeBaseTab";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { Toaster } from "./ui/toaster";
 import { UserMenu } from "./auth/UserMenu";
@@ -66,25 +67,7 @@ export function Dashboard({ userEmail }: DashboardProps) {
         </TabsContent>
 
         <TabsContent value="knowledge-base">
-          <div className="text-center py-12">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-12 mx-auto text-muted-foreground mb-4"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
-              />
-            </svg>
-            <h3 className="text-lg font-semibold mb-2">Baza Wiedzy</h3>
-            <p className="text-muted-foreground">Ta sekcja będzie dostępna wkrótce</p>
-          </div>
+          <KnowledgeBaseTab />
         </TabsContent>
       </Tabs>
 

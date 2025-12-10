@@ -1,17 +1,45 @@
 /**
- * POST /api/flashcards - Create a single flashcard
+ * /api/flashcards - Flashcards CRUD endpoints
  *
- * Creates a flashcard either manually or from AI generation.
- * Validates generation ownership for AI-sourced cards.
+ * GET: Retrieve paginated list of user's flashcards
+ * POST: Create a single flashcard (manual or from AI generation)
  */
 
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { FlashcardService } from "../../../lib/services/flashcard.service";
 import { NotFoundError } from "../../../lib/errors";
-import type { CreateFlashcardCommand, FlashcardDTO, ErrorResponseDTO } from "../../../types";
+import type {
+  CreateFlashcardCommand,
+  FlashcardDTO,
+  FlashcardsListResponseDTO,
+  ErrorResponseDTO,
+} from "../../../types";
 
 export const prerender = false;
+
+/**
+ * Zod schema for GET /api/flashcards query parameters
+ *
+ * Validates:
+ * - limit: integer 1-100 (default: 20)
+ * - offset: non-negative integer (default: 0)
+ *
+ * Uses .coerce.number() to convert URL query string to number
+ */
+const GetFlashcardsQuerySchema = z.object({
+  limit: z.coerce
+    .number({ invalid_type_error: "Limit must be a number" })
+    .int("Limit must be an integer")
+    .min(1, "Limit must be at least 1")
+    .max(100, "Limit must be between 1 and 100")
+    .default(20),
+  offset: z.coerce
+    .number({ invalid_type_error: "Offset must be a number" })
+    .int("Offset must be an integer")
+    .min(0, "Offset must be a non-negative integer")
+    .default(0),
+});
 
 /**
  * Zod schema for CreateFlashcardCommand validation
@@ -56,6 +84,114 @@ const CreateFlashcardSchema = z
       path: ["generation_id"],
     }
   );
+
+/**
+ * GET handler - Retrieve paginated flashcards
+ *
+ * Query params: limit (optional, 1-100, default 20), offset (optional, >=0, default 0)
+ * Response: 200 OK with FlashcardsListResponseDTO
+ * Errors: 400 (validation), 401 (auth), 500 (server error)
+ */
+export const GET: APIRoute = async ({ request, locals }) => {
+  try {
+    // 1. Authentication check (double-check, middleware should handle this)
+    const user = locals.user;
+    if (!user) {
+      // eslint-disable-next-line no-console
+      console.warn("[AUTH_MISSING]", {
+        timestamp: new Date().toISOString(),
+        endpoint: "/api/flashcards",
+        ip: request.headers.get("x-forwarded-for") || "unknown",
+      });
+
+      const errorResponse: ErrorResponseDTO = {
+        error: "Authentication required",
+        message: "Please log in to continue",
+      };
+      return new Response(JSON.stringify(errorResponse), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 2. Parse and validate query parameters
+    const url = new URL(request.url);
+    const queryParams = {
+      limit: url.searchParams.get("limit"),
+      offset: url.searchParams.get("offset"),
+    };
+
+    const validationResult = GetFlashcardsQuerySchema.safeParse(queryParams);
+
+    if (!validationResult.success) {
+      // eslint-disable-next-line no-console
+      console.warn("[VALIDATION_ERROR]", {
+        timestamp: new Date().toISOString(),
+        userId: user.id,
+        params: queryParams,
+        errors: validationResult.error.errors,
+      });
+
+      const errorResponse: ErrorResponseDTO = {
+        error: "Validation failed",
+        details: validationResult.error.errors.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        })),
+      };
+      return new Response(JSON.stringify(errorResponse), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const { limit, offset } = validationResult.data;
+
+    // 3. Initialize FlashcardService
+    const service = new FlashcardService(locals.supabase);
+
+    // 4. Fetch flashcards
+    const result = await service.getFlashcards(user.id, limit, offset);
+
+    // 5. Construct response with pagination metadata
+    const response: FlashcardsListResponseDTO = {
+      flashcards: result.flashcards,
+      pagination: {
+        total: result.total,
+        limit: limit,
+        offset: offset,
+        has_more: offset + limit < result.total,
+      },
+    };
+
+    // 6. Return success response
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    // 7. Handle unexpected errors
+    // eslint-disable-next-line no-console
+    console.error("[UNEXPECTED_ERROR]", {
+      timestamp: new Date().toISOString(),
+      userId: locals.user?.id,
+      endpoint: "/api/flashcards (GET)",
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+
+    const errorResponse: ErrorResponseDTO = {
+      error: "Internal server error",
+      message: "An unexpected error occurred. Please try again later.",
+      retryable: true,
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+};
 
 /**
  * POST handler - Create flashcard
