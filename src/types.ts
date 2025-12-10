@@ -197,3 +197,55 @@ export interface ErrorResponseDTO {
   details?: ValidationErrorDetail[];
   retryable?: boolean;
 }
+
+// ============================================================================
+// UI View Models - Generator Tab
+// ============================================================================
+
+/**
+ * Status of a single flashcard in the UI
+ * - draft: Not yet saved to database
+ * - saving: Save operation in progress
+ * - saved: Successfully saved to database
+ * - error: Save operation failed
+ */
+export type CardUiStatus = "draft" | "saving" | "saved" | "error";
+
+/**
+ * View Model for a flashcard in the generator tab
+ * Extends the data structure with UI-specific state
+ *
+ * @property id - Temporary UUID generated on frontend for React list keys
+ * @property front - Question/prompt side (1-200 chars)
+ * @property back - Answer/explanation side (1-500 chars)
+ * @property status - Current UI state of the card
+ * @property generationId - UUID of generation log (null for manual cards)
+ * @property source - Origin: "manual" | "ai-full" | "ai-edited"
+ * @property errorMessage - Error message for failed save operations (optional)
+ */
+export interface FlashcardViewModel {
+  id: string;
+  front: string;
+  back: string;
+  status: CardUiStatus;
+  generationId: string | null;
+  source: CardSourceType;
+  errorMessage?: string;
+}
+
+/**
+ * State of the entire generator tab
+ *
+ * @property inputText - Source text entered by user
+ * @property isGenerating - Whether AI generation is in progress
+ * @property generationId - ID of current generation session from API (null if none)
+ * @property flashcards - Array of flashcard view models
+ * @property error - Global error message for the generator (e.g., timeout, API failure)
+ */
+export interface GeneratorState {
+  inputText: string;
+  isGenerating: boolean;
+  generationId: string | null;
+  flashcards: FlashcardViewModel[];
+  error: string | null;
+}

@@ -24,10 +24,7 @@ export class FlashcardService {
    * @throws {NotFoundError} When generation_id doesn't exist or doesn't belong to user
    * @throws {Error} On database insert failure
    */
-  async createFlashcard(
-    command: CreateFlashcardCommand,
-    userId: string
-  ): Promise<FlashcardDTO> {
+  async createFlashcard(command: CreateFlashcardCommand, userId: string): Promise<FlashcardDTO> {
     // Step 1: Validate generation ownership if generation_id provided
     if (command.generation_id !== null) {
       await this.validateGenerationOwnership(command.generation_id, userId);
@@ -65,15 +62,8 @@ export class FlashcardService {
    *
    * Security note: Returns 404 instead of 403 to prevent generation_id enumeration
    */
-  private async validateGenerationOwnership(
-    generationId: string,
-    userId: string
-  ): Promise<void> {
-    const { data, error } = await this.supabase
-      .from("generations")
-      .select("user_id")
-      .eq("id", generationId)
-      .single();
+  private async validateGenerationOwnership(generationId: string, userId: string): Promise<void> {
+    const { data, error } = await this.supabase.from("generations").select("user_id").eq("id", generationId).single();
 
     // Generation doesn't exist or database error
     if (error || !data) {
@@ -92,4 +82,3 @@ export class FlashcardService {
     }
   }
 }
-

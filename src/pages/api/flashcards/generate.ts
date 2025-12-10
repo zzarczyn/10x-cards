@@ -20,7 +20,14 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { FlashcardGenerationService } from "../../../lib/services/flashcard-generation.service";
-import { LLMServiceError } from "../../../lib/errors";
+import { OpenRouterService } from "../../../lib/services/openrouter.service";
+import {
+  ConfigurationError,
+  OpenRouterAPIError,
+  RefusalError,
+  ParsingError,
+  ModelValidationError,
+} from "../../../lib/errors";
 import type { GenerateFlashcardsCommand, GenerateFlashcardsResponseDTO, ErrorResponseDTO } from "../../../types";
 
 // Disable pre-rendering for API route (SSR only)
@@ -96,9 +103,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const command: GenerateFlashcardsCommand = validationResult.data;
 
-    // 4. Initialize FlashcardGenerationService
+    // 4. Initialize OpenRouter and FlashcardGenerationService
     const apiKey = import.meta.env.OPENROUTER_API_KEY;
-    const model = import.meta.env.OPENROUTER_MODEL || "anthropic/claude-3.5-sonnet";
+    const model = import.meta.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-exp:free";
+    const appUrl = import.meta.env.PUBLIC_APP_URL || "https://10xcards.app";
+    const appName = import.meta.env.PUBLIC_APP_NAME || "10xCards";
 
     if (!apiKey) {
       // eslint-disable-next-line no-console
@@ -113,7 +122,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
     }
 
-    const service = new FlashcardGenerationService(locals.supabase, apiKey, model);
+    // Initialize OpenRouter service
+    const openRouter = new OpenRouterService({
+      apiKey,
+      siteUrl: appUrl,
+      siteName: appName,
+      defaultModel: model,
+    });
+
+    // Initialize generation service with OpenRouter
+    const service = new FlashcardGenerationService(locals.supabase, openRouter, model);
 
     // 5. Call generation service
     const result: GenerateFlashcardsResponseDTO = await service.generate(command.text, user.id);
@@ -124,15 +142,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    // 7. Handle LLM service errors (timeout, API error, parse error)
-    if (error instanceof LLMServiceError) {
+    // 7. Handle OpenRouter API errors
+    if (error instanceof OpenRouterAPIError) {
       // eslint-disable-next-line no-console
-      console.error("[LLM_SERVICE_ERROR]", {
+      console.error("[OPENROUTER_API_ERROR]", {
         timestamp: new Date().toISOString(),
         userId: locals.user?.id,
-        type: error.type,
-        message: error.message,
         statusCode: error.statusCode,
+        message: error.message,
+        apiMessage: error.apiMessage,
+        retryable: error.retryable,
       });
 
       const errorResponse: ErrorResponseDTO = {
@@ -147,7 +166,91 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
     }
 
-    // 8. Handle unexpected errors
+    // 8. Handle model refusal (safety filters)
+    if (error instanceof RefusalError) {
+      // eslint-disable-next-line no-console
+      console.warn("[MODEL_REFUSAL]", {
+        timestamp: new Date().toISOString(),
+        userId: locals.user?.id,
+        message: error.message,
+        refusalMessage: error.refusalMessage,
+      });
+
+      const errorResponse: ErrorResponseDTO = {
+        error: "Content not allowed",
+        message: "The AI model could not process this content. Please try different text.",
+        retryable: false,
+      };
+
+      return new Response(JSON.stringify(errorResponse), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 9. Handle parsing errors
+    if (error instanceof ParsingError) {
+      // eslint-disable-next-line no-console
+      console.error("[PARSING_ERROR]", {
+        timestamp: new Date().toISOString(),
+        userId: locals.user?.id,
+        message: error.message,
+      });
+
+      const errorResponse: ErrorResponseDTO = {
+        error: "AI response parsing failed",
+        message: "The AI generated an invalid response. Please try again.",
+        retryable: true,
+      };
+
+      return new Response(JSON.stringify(errorResponse), {
+        status: 503,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 10. Handle validation errors
+    if (error instanceof ModelValidationError) {
+      // eslint-disable-next-line no-console
+      console.error("[MODEL_VALIDATION_ERROR]", {
+        timestamp: new Date().toISOString(),
+        userId: locals.user?.id,
+        message: error.message,
+        validationDetails: error.validationDetails,
+      });
+
+      const errorResponse: ErrorResponseDTO = {
+        error: "AI response validation failed",
+        message: "The AI response did not match expected format. Please try again.",
+        retryable: true,
+      };
+
+      return new Response(JSON.stringify(errorResponse), {
+        status: 503,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 11. Handle configuration errors
+    if (error instanceof ConfigurationError) {
+      // eslint-disable-next-line no-console
+      console.error("[CONFIGURATION_ERROR]", {
+        timestamp: new Date().toISOString(),
+        message: error.message,
+      });
+
+      const errorResponse: ErrorResponseDTO = {
+        error: "Service configuration error",
+        message: "AI generation service is not properly configured",
+      };
+
+      return new Response(JSON.stringify(errorResponse), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 12. Handle unexpected errors
     // eslint-disable-next-line no-console
     console.error("[UNEXPECTED_ERROR]", {
       timestamp: new Date().toISOString(),
