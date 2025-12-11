@@ -102,7 +102,7 @@ export function LoginForm() {
           isLoading: false,
         }));
       }
-    } catch (err) {
+    } catch {
       setFormState((prev) => ({
         ...prev,
         error: "Wystąpił błąd połączenia. Spróbuj ponownie.",

@@ -22,6 +22,15 @@ export function FlashcardItem({ card, onEdit, onDelete }: FlashcardItemProps) {
           isFlipped ? "[transform:rotateY(180deg)]" : ""
         }`}
         onClick={handleFlip}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleFlip();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Obróć fiszkę"
       >
         {/* Front Side */}
         <Card className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center [backface-visibility:hidden] shadow-sm border-2 bg-card">

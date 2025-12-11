@@ -28,7 +28,7 @@ describe("useGenerator", () => {
   beforeEach(() => {
     // Clear all mocks before each test
     vi.clearAllMocks();
-    
+
     // Mock fetch globally
     global.fetch = vi.fn();
   });
@@ -95,7 +95,7 @@ describe("useGenerator", () => {
     it("should clear error when setting new input text", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       // Set an error first
       act(() => {
         result.current.actions.generateFlashcards();
@@ -114,7 +114,7 @@ describe("useGenerator", () => {
     it("should handle empty string", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.setInputText("Some text");
       });
@@ -158,7 +158,7 @@ describe("useGenerator", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
       const exactText = "a".repeat(1000); // Exactly 1000 characters
-      
+
       const mockResponse: GenerateFlashcardsResponseDTO = {
         generation_id: "gen-123",
         flashcards: [{ front: "Q1", back: "A1" }],
@@ -210,7 +210,7 @@ describe("useGenerator", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
       const exactText = "a".repeat(10000); // Exactly 10000 characters
-      
+
       const mockResponse: GenerateFlashcardsResponseDTO = {
         generation_id: "gen-123",
         flashcards: [{ front: "Q1", back: "A1" }],
@@ -279,7 +279,7 @@ describe("useGenerator", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
       const validText = "a".repeat(5000);
-      
+
       const mockResponse: GenerateFlashcardsResponseDTO = {
         generation_id: "gen-abc-123",
         flashcards: [
@@ -342,7 +342,7 @@ describe("useGenerator", () => {
       const { result } = renderHook(() => useGenerator());
       const validText = "a".repeat(5000);
 
-      let resolveFetch: (value: Response) => void;
+      let resolveFetch: ((value: Response) => void) | undefined;
       const fetchPromise = new Promise<Response>((resolve) => {
         resolveFetch = resolve;
       });
@@ -365,7 +365,7 @@ describe("useGenerator", () => {
 
       // Complete the fetch
       act(() => {
-        resolveFetch!({
+        resolveFetch?.({
           ok: true,
           json: async () => ({
             generation_id: "gen-123",
@@ -387,7 +387,7 @@ describe("useGenerator", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
       const validText = "a".repeat(5000);
-      
+
       const mockResponse: GenerateFlashcardsResponseDTO = {
         generation_id: "gen-123",
         flashcards: [{ front: "Solo Question", back: "Solo Answer" }],
@@ -422,7 +422,7 @@ describe("useGenerator", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
       const validText = "a".repeat(5000);
-      
+
       const mockFlashcards = Array.from({ length: 10 }, (_, i) => ({
         front: `Question ${i + 1}`,
         back: `Answer ${i + 1}`,
@@ -468,7 +468,7 @@ describe("useGenerator", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
       const validText = "a".repeat(5000);
-      
+
       const errorResponse: ErrorResponseDTO = {
         error: "internal_error",
         message: "AI service temporarily unavailable",
@@ -493,7 +493,7 @@ describe("useGenerator", () => {
       expect(result.current.state.isGenerating).toBe(false);
       expect(result.current.state.error).toBe("AI service temporarily unavailable");
       expect(result.current.state.flashcards).toHaveLength(0);
-      
+
       expect(toast).toHaveBeenCalledWith({
         variant: "destructive",
         title: "❌ Błąd generowania",
@@ -506,9 +506,7 @@ describe("useGenerator", () => {
       const { result } = renderHook(() => useGenerator());
       const validText = "a".repeat(5000);
 
-      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-        new Error("Network connection failed")
-      );
+      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("Network connection failed"));
 
       act(() => {
         result.current.actions.setInputText(validText);
@@ -582,7 +580,7 @@ describe("useGenerator", () => {
     it("should update front field correctly", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -601,7 +599,7 @@ describe("useGenerator", () => {
     it("should update back field correctly", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -621,7 +619,7 @@ describe("useGenerator", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
       const validText = "a".repeat(5000);
-      
+
       const mockResponse: GenerateFlashcardsResponseDTO = {
         generation_id: "gen-123",
         flashcards: [{ front: "Original", back: "Answer" }],
@@ -659,7 +657,7 @@ describe("useGenerator", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
       const validText = "a".repeat(5000);
-      
+
       const mockResponse: GenerateFlashcardsResponseDTO = {
         generation_id: "gen-123",
         flashcards: [{ front: "Original", back: "Answer" }],
@@ -700,7 +698,7 @@ describe("useGenerator", () => {
     it("should not change source when manual card is edited", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -720,7 +718,7 @@ describe("useGenerator", () => {
     it("should not update other cards in the list", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
         result.current.actions.addManualCard();
@@ -743,7 +741,7 @@ describe("useGenerator", () => {
     it("should handle updating non-existent card gracefully", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -767,7 +765,7 @@ describe("useGenerator", () => {
     it("should reject empty front field (TC-REV-002)", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -785,16 +783,14 @@ describe("useGenerator", () => {
 
       // Assert
       expect(result.current.state.flashcards[0].status).toBe("error");
-      expect(result.current.state.flashcards[0].errorMessage).toBe(
-        "Front musi mieć od 1 do 200 znaków"
-      );
+      expect(result.current.state.flashcards[0].errorMessage).toBe("Front musi mieć od 1 do 200 znaków");
       expect(global.fetch).not.toHaveBeenCalled();
     });
 
     it("should reject front field with only whitespace", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -813,15 +809,13 @@ describe("useGenerator", () => {
 
       // Assert
       expect(result.current.state.flashcards[0].status).toBe("error");
-      expect(result.current.state.flashcards[0].errorMessage).toBe(
-        "Front musi mieć od 1 do 200 znaków"
-      );
+      expect(result.current.state.flashcards[0].errorMessage).toBe("Front musi mieć od 1 do 200 znaków");
     });
 
     it("should reject front field longer than 200 characters (TC-REV-003)", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -841,15 +835,13 @@ describe("useGenerator", () => {
 
       // Assert
       expect(result.current.state.flashcards[0].status).toBe("error");
-      expect(result.current.state.flashcards[0].errorMessage).toBe(
-        "Front musi mieć od 1 do 200 znaków"
-      );
+      expect(result.current.state.flashcards[0].errorMessage).toBe("Front musi mieć od 1 do 200 znaków");
     });
 
     it("should accept front field with exactly 200 characters (boundary)", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -880,7 +872,7 @@ describe("useGenerator", () => {
     it("should reject empty back field", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -898,15 +890,13 @@ describe("useGenerator", () => {
 
       // Assert
       expect(result.current.state.flashcards[0].status).toBe("error");
-      expect(result.current.state.flashcards[0].errorMessage).toBe(
-        "Back musi mieć od 1 do 500 znaków"
-      );
+      expect(result.current.state.flashcards[0].errorMessage).toBe("Back musi mieć od 1 do 500 znaków");
     });
 
     it("should reject back field with only whitespace", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -930,7 +920,7 @@ describe("useGenerator", () => {
     it("should reject back field longer than 500 characters", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -950,15 +940,13 @@ describe("useGenerator", () => {
 
       // Assert
       expect(result.current.state.flashcards[0].status).toBe("error");
-      expect(result.current.state.flashcards[0].errorMessage).toBe(
-        "Back musi mieć od 1 do 500 znaków"
-      );
+      expect(result.current.state.flashcards[0].errorMessage).toBe("Back musi mieć od 1 do 500 znaków");
     });
 
     it("should accept back field with exactly 500 characters (boundary)", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -988,7 +976,7 @@ describe("useGenerator", () => {
     it("should clear previous error when retrying save", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -1030,7 +1018,7 @@ describe("useGenerator", () => {
     it("should save valid flashcard and remove from list", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -1081,7 +1069,7 @@ describe("useGenerator", () => {
     it("should set status to 'saving' during save operation", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -1093,7 +1081,7 @@ describe("useGenerator", () => {
         result.current.actions.updateCard(cardId, "back", "Answer");
       });
 
-      let resolveFetch: (value: Response) => void;
+      let resolveFetch: ((value: Response) => void) | undefined;
       const fetchPromise = new Promise<Response>((resolve) => {
         resolveFetch = resolve;
       });
@@ -1112,7 +1100,7 @@ describe("useGenerator", () => {
 
       // Complete the save
       act(() => {
-        resolveFetch!({
+        resolveFetch?.({
           ok: true,
           json: async () => ({ id: "card-123" }),
         } as Response);
@@ -1127,7 +1115,7 @@ describe("useGenerator", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
       const validText = "a".repeat(5000);
-      
+
       const mockResponse: GenerateFlashcardsResponseDTO = {
         generation_id: "gen-abc-123",
         flashcards: [{ front: "AI Question", back: "AI Answer" }],
@@ -1177,7 +1165,7 @@ describe("useGenerator", () => {
     it("should handle save error from API", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -1220,7 +1208,7 @@ describe("useGenerator", () => {
     it("should handle save API error without message", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -1244,15 +1232,13 @@ describe("useGenerator", () => {
       });
 
       // Assert
-      expect(result.current.state.flashcards[0].errorMessage).toBe(
-        "Nie udało się zapisać fiszki"
-      );
+      expect(result.current.state.flashcards[0].errorMessage).toBe("Nie udało się zapisać fiszki");
     });
 
     it("should handle network error during save", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -1264,9 +1250,7 @@ describe("useGenerator", () => {
         result.current.actions.updateCard(cardId, "back", "Answer");
       });
 
-      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-        new Error("Network error")
-      );
+      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("Network error"));
 
       // Act
       await act(async () => {
@@ -1301,7 +1285,7 @@ describe("useGenerator", () => {
     it("should remove card from list without saving", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
         result.current.actions.addManualCard();
@@ -1323,7 +1307,7 @@ describe("useGenerator", () => {
     it("should handle discarding non-existent card gracefully", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -1342,7 +1326,7 @@ describe("useGenerator", () => {
     it("should remove all cards from list", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
         result.current.actions.addManualCard();
@@ -1390,7 +1374,7 @@ describe("useGenerator", () => {
 
       // Assert
       expect(result.current.state.flashcards).toHaveLength(1);
-      
+
       const card = result.current.state.flashcards[0];
       expect(card.front).toBe("");
       expect(card.back).toBe("");
@@ -1403,7 +1387,7 @@ describe("useGenerator", () => {
     it("should add new cards at the beginning of the list", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -1446,7 +1430,7 @@ describe("useGenerator", () => {
     it("should save all draft cards in sequence", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
         result.current.actions.addManualCard();
@@ -1477,7 +1461,7 @@ describe("useGenerator", () => {
       // Assert
       expect(global.fetch).toHaveBeenCalledTimes(3);
       expect(result.current.state.flashcards).toHaveLength(0);
-      
+
       // Should show initial toast
       expect(toast).toHaveBeenCalledWith({
         title: "💾 Zapisywanie...",
@@ -1502,7 +1486,7 @@ describe("useGenerator", () => {
     it("should skip cards with error status", async () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
         result.current.actions.addManualCard();
@@ -1536,7 +1520,7 @@ describe("useGenerator", () => {
     it("should show correct plural forms in toast", async () => {
       // Arrange - 1 card
       const { result } = renderHook(() => useGenerator());
-      
+
       act(() => {
         result.current.actions.addManualCard();
       });
@@ -1574,7 +1558,7 @@ describe("useGenerator", () => {
     it("should clear global error", () => {
       // Arrange
       const { result } = renderHook(() => useGenerator());
-      
+
       // Trigger an error
       act(() => {
         result.current.actions.generateFlashcards();
@@ -1645,4 +1629,3 @@ describe("useGenerator", () => {
     });
   });
 });
-

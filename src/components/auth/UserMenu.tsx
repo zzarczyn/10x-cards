@@ -50,12 +50,10 @@ export function UserMenu({ userEmail }: UserMenuProps) {
       } else {
         // Even if request fails, redirect to login
         // User will be logged out client-side anyway
-        console.error("Logout request failed, redirecting anyway");
         window.location.href = "/auth/login";
       }
-    } catch (error) {
+    } catch {
       // Network error - still redirect to login
-      console.error("Logout error:", error);
       window.location.href = "/auth/login";
     }
   };

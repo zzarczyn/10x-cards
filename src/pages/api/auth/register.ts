@@ -110,8 +110,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         headers: { "Content-Type": "application/json" },
       }
     );
-  } catch (err) {
-    console.error("Register endpoint error:", err);
+  } catch {
     return new Response(
       JSON.stringify({
         error: "Internal server error",

@@ -18,12 +18,7 @@ export const POST: APIRoute = async ({ locals }) => {
   try {
     // 1. Sign out from Supabase
     // This invalidates the session on Supabase side
-    const { error } = await locals.supabase.auth.signOut();
-
-    if (error) {
-      console.error("Supabase logout error:", error);
-      // Continue anyway - we still want to clear cookies client-side
-    }
+    await locals.supabase.auth.signOut();
 
     // 2. Cookies are automatically cleared by @supabase/ssr
     // The createSupabaseServerInstance handles cookie management
@@ -35,9 +30,7 @@ export const POST: APIRoute = async ({ locals }) => {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (err) {
-    console.error("Logout endpoint error:", err);
-
+  } catch {
     // Even if something goes wrong, return success
     // User will be redirected to login page and cookies will be invalid anyway
     return new Response(JSON.stringify({ success: true }), {

@@ -38,7 +38,6 @@ export function useFlashcards(page = 1, limit = 12): UseFlashcardsReturn {
       setFlashcards(data.flashcards);
       setTotal(data.pagination.total);
     } catch (err) {
-      console.error("Error fetching flashcards:", err);
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -50,52 +49,42 @@ export function useFlashcards(page = 1, limit = 12): UseFlashcardsReturn {
   }, [fetchFlashcards]);
 
   const updateFlashcard = async (id: string, updates: UpdateFlashcardCommand) => {
-    try {
-      const response = await fetch(`/api/flashcards/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updates),
-      });
+    const response = await fetch(`/api/flashcards/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updates),
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update flashcard");
-      }
-
-      const updatedCard: FlashcardDTO = await response.json();
-
-      // Optimistic update (or rather, local state update after success)
-      setFlashcards((prev) => prev.map((card) => (card.id === id ? updatedCard : card)));
-    } catch (err) {
-      console.error("Error updating flashcard:", err);
-      throw err; // Re-throw to let the component handle the UI feedback (toast)
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update flashcard");
     }
+
+    const updatedCard: FlashcardDTO = await response.json();
+
+    // Optimistic update (or rather, local state update after success)
+    setFlashcards((prev) => prev.map((card) => (card.id === id ? updatedCard : card)));
   };
 
   const deleteFlashcard = async (id: string) => {
-    try {
-      const response = await fetch(`/api/flashcards/${id}`, {
-        method: "DELETE",
-      });
+    const response = await fetch(`/api/flashcards/${id}`, {
+      method: "DELETE",
+    });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete flashcard");
-      }
-
-      // Local state update
-      setFlashcards((prev) => prev.filter((card) => card.id !== id));
-      setTotal((prev) => Math.max(0, prev - 1));
-
-      // If the page becomes empty but we are not on the first page,
-      // the consumer (component) might want to change the page,
-      // but that logic is better handled in the UI component or by re-fetching.
-      // For now, we just remove it from the current view.
-    } catch (err) {
-      console.error("Error deleting flashcard:", err);
-      throw err;
+    if (!response.ok) {
+      throw new Error("Failed to delete flashcard");
     }
+
+    // Local state update
+    setFlashcards((prev) => prev.filter((card) => card.id !== id));
+    setTotal((prev) => Math.max(0, prev - 1));
+
+    // If the page becomes empty but we are not on the first page,
+    // the consumer (component) might want to change the page,
+    // but that logic is better handled in the UI component or by re-fetching.
+    // For now, we just remove it from the current view.
   };
 
   return {

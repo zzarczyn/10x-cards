@@ -24,9 +24,8 @@ export function DeleteFlashcardAlertDialog({
     try {
       await onConfirm(flashcard.id);
       onOpenChange(false);
-    } catch (err) {
+    } catch {
       // Error handling is done in parent via Toast, but we reset state here
-      console.error(err);
     } finally {
       setIsDeleting(false);
     }
@@ -46,8 +45,8 @@ export function DeleteFlashcardAlertDialog({
           </p>
 
           <div className="bg-muted/50 p-3 rounded mb-6 text-sm italic">
-            "{flashcard.front.substring(0, 100)}
-            {flashcard.front.length > 100 ? "..." : ""}"
+            &ldquo;{flashcard.front.substring(0, 100)}
+            {flashcard.front.length > 100 ? "..." : ""}&rdquo;
           </div>
 
           <div className="flex justify-end gap-2">

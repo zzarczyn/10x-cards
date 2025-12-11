@@ -52,7 +52,7 @@ export function EditFlashcardDialog({ open, onOpenChange, flashcard, onSubmit }:
     try {
       await onSubmit(flashcard.id, { front, back });
       onOpenChange(false);
-    } catch (err) {
+    } catch {
       setError("Nie udało się zaktualizować fiszki");
     } finally {
       setIsSubmitting(false);
