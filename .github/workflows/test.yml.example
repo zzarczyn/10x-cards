@@ -1,7 +1,14 @@
-# Example GitHub Actions workflow for running tests
-# Rename to test.yml and place in .github/workflows/ to activate
+# ⚠️ DEPRECATED: This example file has been replaced by ci.yml
+# 
+# See ci.yml for the current CI/CD configuration
+# Documentation: .github/workflows/README.md
+#
+# This file is kept for reference only and will be removed in future versions.
 
-name: Tests
+# Example GitHub Actions workflow for running tests
+# This was the original template - now replaced by ci.yml
+
+name: Tests (Deprecated Example)
 
 on:
   push:
@@ -94,4 +101,3 @@ jobs:
 
       - name: Check formatting
         run: npm run format -- --check
-

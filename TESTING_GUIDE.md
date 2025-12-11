@@ -2,6 +2,8 @@
 
 Szybki przewodnik po testowaniu w projekcie 10xCards.
 
+> **CI/CD Integration:** All tests described in this guide run automatically in GitHub Actions on every push to main/master. See [CI/CD Setup](CI_CD_SETUP.md) for details.
+
 ## 🏃 Quick Start
 
 ```bash

@@ -1,5 +1,7 @@
 # 10xCards
 
+[![CI/CD Pipeline](https://github.com/zzarczyn/10x-cards/actions/workflows/ci.yml/badge.svg)](https://github.com/zzarczyn/10x-cards/actions/workflows/ci.yml)
+
 10xCards is an AI-powered web application designed to drastically reduce the time required to create educational materials (flashcards). By leveraging Large Language Models (LLMs), it extracts Question-Answer pairs from raw text, allowing users to focus on learning rather than the tedious process of manual data entry.
 
 ## Project Description
@@ -201,6 +203,33 @@ FROM flashcards f
 LEFT JOIN generations g ON f.generation_id = g.id
 WHERE f.generation_id IS NOT NULL;
 ```
+
+## CI/CD
+
+The project uses GitHub Actions for continuous integration and deployment verification.
+
+### Workflow: CI/CD Pipeline
+
+**Triggers:**
+- ✅ Manual execution (via GitHub Actions UI)
+- ✅ Automatic on push to `main`/`master` branch
+
+**Jobs:**
+1. **Lint** - Code quality checks with ESLint
+2. **Unit Tests** - Vitest test suite
+3. **E2E Tests** - Playwright browser tests (Chromium)
+4. **Build** - Production build verification
+
+**Setup:** See [`.github/workflows/README.md`](.github/workflows/README.md) for detailed configuration.
+
+**GitHub Secrets Required:**
+```env
+SUPABASE_URL          # Supabase project URL
+SUPABASE_KEY          # Supabase anon/public key
+OPENROUTER_API_KEY    # OpenRouter API key
+```
+
+Configure secrets in: `Settings` → `Secrets and variables` → `Actions`
 
 ## Project Status
 
