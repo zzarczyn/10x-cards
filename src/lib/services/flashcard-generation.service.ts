@@ -161,6 +161,7 @@ Guidelines:
 - Answers (back) should be concise but complete (max 500 characters, 1-3 sentences)
 - Cover the most important concepts, facts, and relationships
 - Use simple language appropriate for learners
+- **IMPORTANT: Generate flashcards in the SAME LANGUAGE as the source text below**
 
 Text to analyze:
 """

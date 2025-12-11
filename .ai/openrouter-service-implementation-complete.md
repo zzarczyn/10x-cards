@@ -70,7 +70,7 @@ SUPABASE_KEY=your-anon-key
 
 # OpenRouter
 OPENROUTER_API_KEY=sk-or-v1-...
-OPENROUTER_MODEL=google/gemini-2.0-flash-exp:free
+OPENROUTER_MODEL=openai/gpt-oss-20b
 
 # App Info (for OpenRouter ranking)
 PUBLIC_APP_URL=https://10xcards.app
@@ -247,7 +247,7 @@ const openRouter = new OpenRouterService({
   apiKey: import.meta.env.OPENROUTER_API_KEY,
   siteUrl: "https://10xcards.app",
   siteName: "10xCards",
-  defaultModel: "google/gemini-2.0-flash-exp:free"
+  defaultModel: "openai/gpt-oss-20b"
 });
 
 // 2. Przygotowanie schematu

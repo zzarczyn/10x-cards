@@ -105,7 +105,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // 4. Initialize OpenRouter and FlashcardGenerationService
     const apiKey = import.meta.env.OPENROUTER_API_KEY;
-    const model = import.meta.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-exp:free";
+    const model = import.meta.env.OPENROUTER_MODEL || "openai/gpt-oss-20b";
     const appUrl = import.meta.env.PUBLIC_APP_URL || "https://10xcards.app";
     const appName = import.meta.env.PUBLIC_APP_NAME || "10xCards";
 
