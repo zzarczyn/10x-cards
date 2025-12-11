@@ -32,7 +32,7 @@
 
 -- Enable moddatetime extension for automatic timestamp updates
 -- Required by: handle_flashcards_updated_at trigger
-create extension if not exists moddatetime schema extensions;
+create extension if not exists moddatetime;
 
 comment on extension moddatetime is 'Provides moddatetime() function for automatic timestamp management';
 
