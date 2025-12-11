@@ -11,7 +11,7 @@ if (!session) {
   return Astro.redirect("/auth/login");
 }
 
-// Get user email for UserMenu component
+// Get user email for UserMenu component.
 const userEmail = session.user.email ?? "";
 ---
 
