@@ -1,9 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import type { 
-  FlashcardDTO, 
-  FlashcardsListResponseDTO, 
-  UpdateFlashcardCommand 
-} from "../../types";
+import type { FlashcardDTO, FlashcardsListResponseDTO, UpdateFlashcardCommand } from "../../types";
 
 interface UseFlashcardsReturn {
   flashcards: FlashcardDTO[];
@@ -15,7 +11,7 @@ interface UseFlashcardsReturn {
   deleteFlashcard: (id: string) => Promise<void>;
 }
 
-export function useFlashcards(page: number = 1, limit: number = 12): UseFlashcardsReturn {
+export function useFlashcards(page = 1, limit = 12): UseFlashcardsReturn {
   const [flashcards, setFlashcards] = useState<FlashcardDTO[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +25,7 @@ export function useFlashcards(page: number = 1, limit: number = 12): UseFlashcar
     setError(null);
     try {
       const response = await fetch(`/api/flashcards?limit=${limit}&offset=${offset}`);
-      
+
       if (response.status === 401) {
         throw new Error("Unauthorized");
       }
@@ -71,9 +67,7 @@ export function useFlashcards(page: number = 1, limit: number = 12): UseFlashcar
       const updatedCard: FlashcardDTO = await response.json();
 
       // Optimistic update (or rather, local state update after success)
-      setFlashcards((prev) =>
-        prev.map((card) => (card.id === id ? updatedCard : card))
-      );
+      setFlashcards((prev) => prev.map((card) => (card.id === id ? updatedCard : card)));
     } catch (err) {
       console.error("Error updating flashcard:", err);
       throw err; // Re-throw to let the component handle the UI feedback (toast)
@@ -93,9 +87,9 @@ export function useFlashcards(page: number = 1, limit: number = 12): UseFlashcar
       // Local state update
       setFlashcards((prev) => prev.filter((card) => card.id !== id));
       setTotal((prev) => Math.max(0, prev - 1));
-      
-      // If the page becomes empty but we are not on the first page, 
-      // the consumer (component) might want to change the page, 
+
+      // If the page becomes empty but we are not on the first page,
+      // the consumer (component) might want to change the page,
       // but that logic is better handled in the UI component or by re-fetching.
       // For now, we just remove it from the current view.
     } catch (err) {
@@ -114,4 +108,3 @@ export function useFlashcards(page: number = 1, limit: number = 12): UseFlashcar
     deleteFlashcard,
   };
 }
-

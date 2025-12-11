@@ -1,6 +1,6 @@
 /**
  * Maps Supabase Auth errors to user-friendly Polish messages
- * 
+ *
  * @param error - Error object from Supabase Auth
  * @returns User-friendly error message in Polish
  */
@@ -62,4 +62,3 @@ export function mapSupabaseAuthError(error: unknown): string {
   // Default fallback
   return "Wystąpił błąd. Spróbuj ponownie później.";
 }
-

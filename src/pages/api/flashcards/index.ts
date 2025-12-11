@@ -9,12 +9,7 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { FlashcardService } from "../../../lib/services/flashcard.service";
 import { NotFoundError } from "../../../lib/errors";
-import type {
-  CreateFlashcardCommand,
-  FlashcardDTO,
-  FlashcardsListResponseDTO,
-  ErrorResponseDTO,
-} from "../../../types";
+import type { CreateFlashcardCommand, FlashcardDTO, FlashcardsListResponseDTO, ErrorResponseDTO } from "../../../types";
 
 export const prerender = false;
 

@@ -24,3 +24,15 @@ pnpm-debug.log*
 .idea/
 
 .ai/prompts/
+
+# test coverage
+coverage/
+.nyc_output/
+
+# test results
+test-results/
+playwright-report/
+*.spec.ts-snapshots/
+
+# Vitest
+vitest.config.ts.timestamp-*

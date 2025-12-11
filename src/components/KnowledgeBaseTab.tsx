@@ -79,8 +79,19 @@ export function KnowledgeBaseTab() {
     return (
       <div className="text-center py-20 border-2 border-dashed rounded-lg">
         <div className="mx-auto size-12 bg-muted rounded-full flex items-center justify-center mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-muted-foreground">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-6 text-muted-foreground"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+            />
           </svg>
         </div>
         <h3 className="text-lg font-semibold">Brak zapisanych fiszek</h3>
@@ -93,12 +104,7 @@ export function KnowledgeBaseTab() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {flashcards.map((card) => (
-          <FlashcardItem
-            key={card.id}
-            card={card}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+          <FlashcardItem key={card.id} card={card} onEdit={handleEdit} onDelete={handleDelete} />
         ))}
       </div>
 
@@ -126,4 +132,3 @@ export function KnowledgeBaseTab() {
     </div>
   );
 }
-

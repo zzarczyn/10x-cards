@@ -4,10 +4,10 @@ import { mapSupabaseAuthError } from "../../../lib/services/auth-error-mapping.s
 
 /**
  * POST /api/auth/register
- * 
+ *
  * Registers a new user with Supabase Auth
  * Sends email verification link
- * 
+ *
  * @returns 201 with userId on success
  * @returns 400 on validation error
  * @returns 409 if email already registered
@@ -34,7 +34,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -55,8 +55,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
       const errorMessage = mapSupabaseAuthError(error);
 
       // Check if it's a duplicate email error
-      if (error.message.toLowerCase().includes("already registered") || 
-          error.message.toLowerCase().includes("user already registered")) {
+      if (
+        error.message.toLowerCase().includes("already registered") ||
+        error.message.toLowerCase().includes("user already registered")
+      ) {
         return new Response(
           JSON.stringify({
             error: "Registration failed",
@@ -65,7 +67,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           {
             status: 409,
             headers: { "Content-Type": "application/json" },
-          },
+          }
         );
       }
 
@@ -77,7 +79,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -91,7 +93,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -106,7 +108,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       {
         status: 201,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   } catch (err) {
     console.error("Register endpoint error:", err);
@@ -118,8 +120,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 };
-

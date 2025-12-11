@@ -50,3 +50,74 @@ Jeśli Twoim priorytetem jest **szybkość dowiezienia MVP**:
 1.  Zostaw **Supabase, Shadcn/UI, OpenRouter**.
 2.  Cofnij wersje do **Stable** (React 18, Tailwind 3).
 3.  Mocno rozważ zmianę **Astro -> Vite (React SPA)**. Uprości to architekturę (brak hydration issues, prostszy stan) i hosting (static hosting zamiast kontenerów na DO).
+
+---
+
+## Stack Testowy
+
+### 7. Czy wybrane narzędzia testowe są odpowiednie dla projektu?
+**Tak, bardzo dobry wybór.**
+
+#### Testy Jednostkowe i Integracyjne
+*   **Vitest:** Nowoczesny framework testowy, bezpośredni następca Jest. Idealny dla projektów z Vite/Astro.
+    *   *Zalety:* Szybki (native ESM), kompatybilny z Vite, doskonała integracja z TypeScript.
+    *   *Zastosowanie:* Testowanie serwisów backendowych (`flashcard.service.ts`, `auth-validation.service.ts`), custom hooks, utility functions.
+    
+*   **React Testing Library:** Standard przemysłowy do testowania komponentów React.
+    *   *Zalety:* Testuje komponenty z perspektywy użytkownika (nie implementacji), wymusza dobre praktyki.
+    *   *Zastosowanie:* Testowanie wszystkich komponentów React (`<LoginForm>`, `<GeneratorInputSection>`, `<ReviewCard>`).
+
+*   **MSW (Mock Service Worker):** Narzędzie do mockowania API calls.
+    *   *Zalety:* Działa na poziomie sieciowym (intercept fetch), nie wymaga modyfikacji kodu produkcyjnego.
+    *   *Zastosowanie:* Mockowanie OpenRouter API, Supabase calls w testach jednostkowych.
+
+#### Testy End-to-End
+*   **Playwright:** Najnowocześniejsze narzędzie do testów E2E, przewyższające Cypress i Selenium.
+    *   *Zalety:* Cross-browser (Chrome, Firefox, Safari), auto-wait (brak flaky tests), screenshots/videos, parallelizacja.
+    *   *Zastosowanie:* Testowanie pełnych scenariuszy użytkownika (rejestracja → generowanie → zapisywanie fiszek).
+    *   *Ryzyko:* Może mieć problemy z React 19 (bleeding edge), ale Playwright jest aktywnie rozwijany.
+
+#### Dane Testowe
+*   **Faker.js:** Generowanie realistycznych danych testowych (email, password, text).
+    *   *Zalety:* Eliminuje hardcoded test data, zwiększa różnorodność testów.
+    *   *Zastosowanie:* Tworzenie użytkowników testowych, generowanie tekstu do AI.
+
+### 8. Czy stack testowy jest kompatybilny z bleeding-edge stackiem?
+**Tak, z małym zastrzeżeniem.**
+
+*   **Vitest + React 19:** Vitest ma doskonałe wsparcie dla React 19 (oficjalnie wspierany).
+*   **React Testing Library + React 19:** RTL v14+ jest kompatybilny z React 19.
+*   **Playwright + Astro 5:** Playwright jest agnostyczny względem frameworka frontendowego, więc brak problemów.
+*   **MSW + Astro SSR:** MSW działa zarówno w testach Node.js (SSR) jak i w przeglądarce (client-side).
+
+**Zastrzeżenie:** Tailwind 4 (jeśli w beta) może wymagać dodatkowej konfiguracji w testach Vitest (CSS processing), ale to rozwiązywalne.
+
+### 9. Czy koszt utrzymania testów będzie akceptowalny?
+**Tak, niski.**
+
+*   Wszystkie narzędzia są **open-source i darmowe**.
+*   **Vitest** jest szybszy niż Jest, co skraca czas CI/CD (niższe koszty GitHub Actions minutes).
+*   **Playwright** oferuje darmowe minuty w GitHub Actions (paralelizacja cross-browser).
+*   Brak kosztów licencji (w przeciwieństwie do np. BrowserStack do cross-browser testingu).
+
+### 10. Czy strategia testowa wspiera wymagania PRD?
+**Tak, bezpośrednio adresuje kluczowe metryki.**
+
+*   **Metryka: 75% fiszek AI akceptowanych**
+    *   Testy weryfikują `source` field (ai-full vs ai-edited vs manual).
+    *   E2E testy sprawdzają flow: generowanie → edycja → zapisywanie.
+    
+*   **Metryka: 75% fiszek z AI (nie ręcznie)**
+    *   Testy sprawdzają `generation_id` linkage.
+    *   Metryki zapisywane do `generations` table są testowane.
+
+*   **Bezpieczeństwo (RLS)**
+    *   Dedykowane testy security (TC-SEC-001 do TC-SEC-005).
+    *   Automatyczne testy RLS policies w CI/CD.
+
+### Rekomendacja dla Testów
+**Stack testowy jest optymalny dla projektu. Zalecenia:**
+1.  Priorytet: **Testy bezpieczeństwa (RLS)** – krytyczne przed produkcją.
+2.  Setup CI/CD z automatycznym uruchamianiem testów na każdy PR.
+3.  Cel pokrycia: **80% dla serwisów**, **70% dla komponentów** (zgodnie z test-plan.md).
+4.  E2E: Focus na **critical paths** (auth, generator, CRUD) – unikaj testowania każdego edge case w E2E (wolne i kosztowne).

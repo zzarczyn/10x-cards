@@ -24,6 +24,14 @@ This project uses a modern, bleeding-edge technology stack:
 - **Backend & Auth:** [Supabase](https://supabase.com/) (PostgreSQL, Auth, Row Level Security)
 - **AI Provider:** [OpenRouter](https://openrouter.ai/) (LLM Integration)
 
+### Testing Stack
+
+- **Unit & Integration Testing:** [Vitest](https://vitest.dev/) (Test framework)
+- **Component Testing:** [React Testing Library](https://testing-library.com/react) (React component testing)
+- **E2E Testing:** [Playwright](https://playwright.dev/) (Cross-browser automation)
+- **API Mocking:** [MSW](https://mswjs.io/) (Mock Service Worker)
+- **Test Data Generation:** [Faker.js](https://fakerjs.dev/) (Realistic test data)
+
 ## Getting Started Locally
 
 Follow these instructions to get a local copy of the project up and running.
@@ -85,6 +93,11 @@ Follow these instructions to get a local copy of the project up and running.
 | `npm run lint` | Runs ESLint to check for code quality issues. |
 | `npm run lint:fix` | Runs ESLint and automatically fixes fixable issues. |
 | `npm run format` | Formats code using Prettier. |
+| `npm run test` | Runs unit and integration tests with Vitest. |
+| `npm run test:ui` | Opens Vitest UI for interactive test running. |
+| `npm run test:coverage` | Generates test coverage report. |
+| `npm run test:e2e` | Runs end-to-end tests with Playwright. |
+| `npm run test:e2e:ui` | Opens Playwright UI for interactive E2E testing. |
 
 ## Project Scope
 
@@ -102,6 +115,42 @@ Follow these instructions to get a local copy of the project up and running.
 - **Social Features:** No sharing or public profiles.
 
 ## Testing
+
+The project uses a comprehensive testing strategy covering unit tests, integration tests, and end-to-end tests.
+
+### Testing Framework
+
+**Unit & Integration Tests** (Vitest + React Testing Library):
+- Test individual functions, services, and components in isolation
+- Mock external dependencies (API calls, database)
+- Fast execution, run on every commit
+- Target coverage: 80% for services, 70% for components
+
+**End-to-End Tests** (Playwright):
+- Test complete user workflows across the entire application
+- Run in real browsers (Chrome, Firefox, Safari)
+- Verify integration between frontend, backend, and external services
+- Critical for authentication, generator, and CRUD flows
+
+**Quick Test Commands**:
+```bash
+# Run unit tests
+npm run test
+
+# Run unit tests with UI
+npm run test:ui
+
+# Generate coverage report
+npm run test:coverage
+
+# Run E2E tests
+npm run test:e2e
+
+# Run E2E tests with UI
+npm run test:e2e:ui
+```
+
+For detailed testing strategy, see `.ai/test-plan.md`.
 
 ### API Endpoint Testing
 

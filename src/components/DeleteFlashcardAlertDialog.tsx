@@ -34,7 +34,7 @@ export function DeleteFlashcardAlertDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div 
+      <div
         className="bg-background rounded-lg shadow-lg w-full max-w-md border overflow-hidden animate-in zoom-in-95 duration-200"
         role="alertdialog"
         aria-modal="true"
@@ -44,24 +44,17 @@ export function DeleteFlashcardAlertDialog({
           <p className="text-muted-foreground mb-6">
             Tej operacji nie można cofnąć. Fiszka zostanie trwale usunięta z Twojej bazy wiedzy.
           </p>
-          
+
           <div className="bg-muted/50 p-3 rounded mb-6 text-sm italic">
-            "{flashcard.front.substring(0, 100)}{flashcard.front.length > 100 ? "..." : ""}"
+            "{flashcard.front.substring(0, 100)}
+            {flashcard.front.length > 100 ? "..." : ""}"
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isDeleting}
-            >
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isDeleting}>
               Anuluj
             </Button>
-            <Button 
-              variant="destructive" 
-              onClick={handleConfirm}
-              disabled={isDeleting}
-            >
+            <Button variant="destructive" onClick={handleConfirm} disabled={isDeleting}>
               {isDeleting ? "Usuwanie..." : "Usuń"}
             </Button>
           </div>
@@ -70,4 +63,3 @@ export function DeleteFlashcardAlertDialog({
     </div>
   );
 }
-

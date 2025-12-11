@@ -4,10 +4,10 @@ import { mapSupabaseAuthError } from "../../../lib/services/auth-error-mapping.s
 
 /**
  * POST /api/auth/login
- * 
+ *
  * Authenticates user with email and password
  * Sets httpOnly cookies for session management
- * 
+ *
  * @returns 200 with user data on success
  * @returns 400 on validation error
  * @returns 401 on authentication failure
@@ -34,7 +34,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -57,7 +57,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         {
           status: 401,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -71,7 +71,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         {
           status: 401,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -90,7 +90,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   } catch (err) {
     console.error("Login endpoint error:", err);
@@ -102,8 +102,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 };
-

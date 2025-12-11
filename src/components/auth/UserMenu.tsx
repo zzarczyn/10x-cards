@@ -4,15 +4,15 @@ import type { UserMenuProps } from "../../types";
 
 /**
  * UserMenu component
- * 
+ *
  * Displays user information and logout functionality in Dashboard header
- * 
+ *
  * Features:
  * - User email display (truncated if too long)
  * - User avatar icon
  * - Logout button with loading state
  * - Handles logout API call and redirect
- * 
+ *
  * Position: Top-right corner of Dashboard
  */
 export function UserMenu({ userEmail }: UserMenuProps) {
@@ -69,12 +69,7 @@ export function UserMenu({ userEmail }: UserMenuProps) {
           className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary"
           aria-hidden="true"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="size-5"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
             <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
           </svg>
         </div>
@@ -86,13 +81,7 @@ export function UserMenu({ userEmail }: UserMenuProps) {
       </div>
 
       {/* Logout Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleLogout}
-        disabled={isLoggingOut}
-        aria-label="Wyloguj się"
-      >
+      <Button variant="outline" size="sm" onClick={handleLogout} disabled={isLoggingOut} aria-label="Wyloguj się">
         {isLoggingOut ? (
           <>
             <svg

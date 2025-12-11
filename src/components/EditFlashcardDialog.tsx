@@ -10,12 +10,7 @@ interface EditFlashcardDialogProps {
   onSubmit: (id: string, data: UpdateFlashcardCommand) => Promise<void>;
 }
 
-export function EditFlashcardDialog({
-  open,
-  onOpenChange,
-  flashcard,
-  onSubmit,
-}: EditFlashcardDialogProps) {
+export function EditFlashcardDialog({ open, onOpenChange, flashcard, onSubmit }: EditFlashcardDialogProps) {
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,14 +61,14 @@ export function EditFlashcardDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div 
+      <div
         className="bg-background rounded-lg shadow-lg w-full max-w-md border overflow-hidden animate-in zoom-in-95 duration-200"
         role="dialog"
         aria-modal="true"
       >
         <div className="p-6">
           <h2 className="text-lg font-semibold mb-4">Edytuj fiszkę</h2>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="edit-front" className="text-sm font-medium">
@@ -87,9 +82,7 @@ export function EditFlashcardDialog({
                 disabled={isSubmitting}
                 className="resize-none"
               />
-              <div className="text-xs text-muted-foreground text-right">
-                {front.length}/200
-              </div>
+              <div className="text-xs text-muted-foreground text-right">{front.length}/200</div>
             </div>
 
             <div className="space-y-2">
@@ -104,24 +97,13 @@ export function EditFlashcardDialog({
                 disabled={isSubmitting}
                 className="resize-none min-h-[100px]"
               />
-              <div className="text-xs text-muted-foreground text-right">
-                {back.length}/500
-              </div>
+              <div className="text-xs text-muted-foreground text-right">{back.length}/500</div>
             </div>
 
-            {error && (
-              <div className="text-sm text-destructive bg-destructive/10 p-2 rounded">
-                {error}
-              </div>
-            )}
+            {error && <div className="text-sm text-destructive bg-destructive/10 p-2 rounded">{error}</div>}
 
             <div className="flex justify-end gap-2 mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isSubmitting}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
                 Anuluj
               </Button>
               <Button type="submit" disabled={isSubmitting}>
@@ -134,4 +116,3 @@ export function EditFlashcardDialog({
     </div>
   );
 }
-
