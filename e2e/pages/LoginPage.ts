@@ -38,7 +38,7 @@ export class LoginPage {
 
   async waitForNavigation() {
     // Wait for navigation away from login page (to any page that doesn't contain /auth/)
-    await this.page.waitForURL((url) => !url.pathname.includes('/auth/'), { timeout: 30000 });
+    await this.page.waitForURL((url) => !url.pathname.includes("/auth/"), { timeout: 30000 });
   }
 
   async getErrorText() {

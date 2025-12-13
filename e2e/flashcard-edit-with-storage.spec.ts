@@ -17,10 +17,10 @@ test.describe("Flashcard Edit Flow (With Storage State)", () => {
 
     // 1. Przejdź do zakładki KnowledgeBaseTab
     await dashboard.goto();
-    
+
     // Wait for React hydration to complete
     await page.waitForLoadState("networkidle");
-    
+
     await dashboard.switchToKnowledgeBaseTab();
 
     // 2. Poczekaj aż załadują się wszystkie fiszki

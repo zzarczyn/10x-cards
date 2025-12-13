@@ -18,8 +18,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
-    "test:e2e:codegen": "playwright codegen http://localhost:4321",
-    "test:e2e:check": "node scripts/check-e2e-readiness.js",
+    "test:e2e:codegen": "playwright codegen http://localhost:3000",
     "test:all": "npm run test && npm run test:e2e"
   },
   "dependencies": {
