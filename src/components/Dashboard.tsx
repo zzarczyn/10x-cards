@@ -36,7 +36,7 @@ export function Dashboard({ userEmail }: DashboardProps) {
       {/* Tabs */}
       <Tabs defaultValue="generator" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-8">
-          <TabsTrigger value="generator">
+          <TabsTrigger data-testid="tab-generator" value="generator">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
@@ -48,7 +48,7 @@ export function Dashboard({ userEmail }: DashboardProps) {
             </svg>
             Generator
           </TabsTrigger>
-          <TabsTrigger value="knowledge-base">
+          <TabsTrigger data-testid="tab-knowledge-base" value="knowledge-base">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
@@ -62,11 +62,11 @@ export function Dashboard({ userEmail }: DashboardProps) {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="generator">
+        <TabsContent data-testid="tab-content-generator" value="generator">
           <GeneratorTab state={state} actions={actions} />
         </TabsContent>
 
-        <TabsContent value="knowledge-base">
+        <TabsContent data-testid="tab-content-knowledge-base" value="knowledge-base">
           <KnowledgeBaseTab />
         </TabsContent>
       </Tabs>

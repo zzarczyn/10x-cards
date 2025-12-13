@@ -21,10 +21,13 @@ export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKe
 /**
  * Cookie options for Supabase auth cookies
  * Following security best practices from @supabase/ssr
+ *
+ * Note: secure is set to false in development (HTTP) to allow cookies to work
+ * In production (HTTPS), it should be true for security
  */
 export const cookieOptions: CookieOptionsWithName = {
   path: "/",
-  secure: true,
+  secure: import.meta.env.PROD, // true in production (HTTPS), false in dev (HTTP)
   httpOnly: true,
   sameSite: "lax",
 };

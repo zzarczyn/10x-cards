@@ -3,7 +3,7 @@
  * Page Object Model for login page interactions
  */
 
-import { Page, Locator } from "@playwright/test";
+import { type Page, type Locator } from "@playwright/test";
 
 export class LoginPage {
   readonly page: Page;
@@ -16,14 +16,14 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.emailInput = page.getByLabel(/email/i);
-    this.passwordInput = page.getByLabel(/password/i);
-    this.submitButton = page.getByRole("button", { name: /sign in|login/i });
+    this.emailInput = page.getByTestId("login-email-input");
+    this.passwordInput = page.getByTestId("login-password-input");
+    this.submitButton = page.getByTestId("login-submit-btn");
     this.errorMessage = page.getByRole("alert");
     this.forgotPasswordLink = page.getByRole("link", {
-      name: /forgot password/i,
+      name: /zapomniałeś hasła/i,
     });
-    this.registerLink = page.getByRole("link", { name: /sign up|register/i });
+    this.registerLink = page.getByRole("link", { name: /zarejestruj/i });
   }
 
   async goto() {
@@ -37,7 +37,8 @@ export class LoginPage {
   }
 
   async waitForNavigation() {
-    await this.page.waitForURL(/^((?!\/auth\/).)*$/);
+    // Wait for navigation away from login page (to any page that doesn't contain /auth/)
+    await this.page.waitForURL((url) => !url.pathname.includes('/auth/'), { timeout: 30000 });
   }
 
   async getErrorText() {

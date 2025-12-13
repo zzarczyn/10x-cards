@@ -19,6 +19,7 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:codegen": "playwright codegen http://localhost:4321",
+    "test:e2e:check": "node scripts/check-e2e-readiness.js",
     "test:all": "npm run test && npm run test:e2e"
   },
   "dependencies": {
@@ -36,6 +37,7 @@
     "astro": "^5.13.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
     "lucide-react": "^0.487.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

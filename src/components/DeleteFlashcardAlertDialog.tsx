@@ -34,6 +34,7 @@ export function DeleteFlashcardAlertDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div
+        data-testid="delete-flashcard-dialog"
         className="bg-background rounded-lg shadow-lg w-full max-w-md border overflow-hidden animate-in zoom-in-95 duration-200"
         role="alertdialog"
         aria-modal="true"
@@ -50,10 +51,20 @@ export function DeleteFlashcardAlertDialog({
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isDeleting}>
+            <Button
+              data-testid="delete-flashcard-cancel-btn"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isDeleting}
+            >
               Anuluj
             </Button>
-            <Button variant="destructive" onClick={handleConfirm} disabled={isDeleting}>
+            <Button
+              data-testid="delete-flashcard-confirm-btn"
+              variant="destructive"
+              onClick={handleConfirm}
+              disabled={isDeleting}
+            >
               {isDeleting ? "Usuwanie..." : "Usuń"}
             </Button>
           </div>

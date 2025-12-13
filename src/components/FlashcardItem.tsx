@@ -6,17 +6,18 @@ import type { FlashcardDTO } from "../types";
 
 interface FlashcardItemProps {
   card: FlashcardDTO;
+  index: number;
   onEdit: (card: FlashcardDTO) => void;
   onDelete: (card: FlashcardDTO) => void;
 }
 
-export function FlashcardItem({ card, onEdit, onDelete }: FlashcardItemProps) {
+export function FlashcardItem({ card, index, onEdit, onDelete }: FlashcardItemProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleFlip = () => setIsFlipped(!isFlipped);
 
   return (
-    <div className="group h-[280px] w-full [perspective:1000px]">
+    <div data-testid={`flashcard-item-${index}`} className="group h-[280px] w-full [perspective:1000px]">
       <div
         className={`relative w-full h-full transition-all duration-500 [transform-style:preserve-3d] cursor-pointer ${
           isFlipped ? "[transform:rotateY(180deg)]" : ""
@@ -35,7 +36,9 @@ export function FlashcardItem({ card, onEdit, onDelete }: FlashcardItemProps) {
         {/* Front Side */}
         <Card className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center [backface-visibility:hidden] shadow-sm border-2 bg-card">
           <div className="flex-1 flex items-center justify-center w-full overflow-y-auto">
-            <p className="text-lg font-medium whitespace-pre-wrap">{card.front}</p>
+            <p data-testid={`flashcard-front-${index}`} className="text-lg font-medium whitespace-pre-wrap">
+              {card.front}
+            </p>
           </div>
           <div className="mt-4 text-xs text-muted-foreground uppercase tracking-wider font-semibold">Pytanie</div>
         </Card>
@@ -43,7 +46,9 @@ export function FlashcardItem({ card, onEdit, onDelete }: FlashcardItemProps) {
         {/* Back Side */}
         <Card className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center [backface-visibility:hidden] [transform:rotateY(180deg)] shadow-sm border-primary/20 bg-muted">
           <div className="flex-1 flex items-center justify-center w-full overflow-y-auto">
-            <p className="text-lg whitespace-pre-wrap">{card.back}</p>
+            <p data-testid={`flashcard-back-${index}`} className="text-lg whitespace-pre-wrap">
+              {card.back}
+            </p>
           </div>
           <div className="mt-4 text-xs text-muted-foreground uppercase tracking-wider font-semibold">Odpowiedź</div>
         </Card>
@@ -52,6 +57,7 @@ export function FlashcardItem({ card, onEdit, onDelete }: FlashcardItemProps) {
       {/* Floating Actions (Always visible, no flip) */}
       <div className="absolute bottom-4 right-4 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
         <Button
+          data-testid={`flashcard-flip-btn-${index}`}
           variant="secondary"
           size="icon"
           className="h-8 w-8 shadow-sm"
@@ -64,6 +70,7 @@ export function FlashcardItem({ card, onEdit, onDelete }: FlashcardItemProps) {
           <Repeat className="h-4 w-4" />
         </Button>
         <Button
+          data-testid={`flashcard-edit-btn-${index}`}
           variant="secondary"
           size="icon"
           className="h-8 w-8 shadow-sm"
@@ -76,6 +83,7 @@ export function FlashcardItem({ card, onEdit, onDelete }: FlashcardItemProps) {
           <Edit2 className="h-4 w-4" />
         </Button>
         <Button
+          data-testid={`flashcard-delete-btn-${index}`}
           variant="destructive"
           size="icon"
           className="h-8 w-8 shadow-sm"

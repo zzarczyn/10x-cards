@@ -97,13 +97,22 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    // 5. Return success response
-    // Note: User needs to confirm email before they can login
+    // 5. Auto-login user after registration (email confirmation is disabled in config)
+    if (data.session) {
+      // Set session cookie for auto-login
+      await locals.supabase.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+      });
+    }
+
+    // 6. Return success response
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Sprawdź swoją skrzynkę email, aby potwierdzić konto",
+        message: "Konto zostało utworzone pomyślnie",
         userId: data.user.id,
+        autoLogin: !!data.session,
       }),
       {
         status: 201,

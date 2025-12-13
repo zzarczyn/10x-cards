@@ -3,26 +3,34 @@
  * Page Object Model for dashboard interactions
  */
 
-import { Page, Locator } from "@playwright/test";
+import { type Page, type Locator } from "@playwright/test";
+import { KnowledgeBaseTab } from "../page-objects/KnowledgeBaseTab";
 
 export class DashboardPage {
   readonly page: Page;
   readonly welcomeHeading: Locator;
   readonly generatorTab: Locator;
   readonly knowledgeBaseTab: Locator;
+  readonly generatorContent: Locator;
+  readonly knowledgeBaseContent: Locator;
   readonly textInput: Locator;
   readonly generateButton: Locator;
   readonly flashcardsList: Locator;
   readonly userMenu: Locator;
   readonly logoutButton: Locator;
+  readonly knowledgeBase: KnowledgeBaseTab;
 
   constructor(page: Page) {
     this.page = page;
     this.welcomeHeading = page.getByRole("heading", { level: 1 });
-    this.generatorTab = page.getByRole("tab", { name: /generator|generuj/i });
-    this.knowledgeBaseTab = page.getByRole("tab", {
-      name: /knowledge base|baza wiedzy/i,
-    });
+
+    // Tabs using data-testid
+    this.generatorTab = page.getByTestId("tab-generator");
+    this.knowledgeBaseTab = page.getByTestId("tab-knowledge-base");
+    this.generatorContent = page.getByTestId("tab-content-generator");
+    this.knowledgeBaseContent = page.getByTestId("tab-content-knowledge-base");
+
+    // Generator tab elements
     this.textInput = page.getByPlaceholder(/paste.*text|wklej.*tekst/i);
     this.generateButton = page.getByRole("button", {
       name: /generate|generuj/i,
@@ -30,8 +38,13 @@ export class DashboardPage {
     this.flashcardsList = page.getByRole("list").filter({
       has: page.locator('[data-testid*="flashcard"]'),
     });
+
+    // User menu
     this.userMenu = page.getByRole("button", { name: /user menu|menu/i });
     this.logoutButton = page.getByRole("menuitem", { name: /logout|wyloguj/i });
+
+    // Knowledge Base Tab page object
+    this.knowledgeBase = new KnowledgeBaseTab(page);
   }
 
   async goto() {
@@ -40,10 +53,16 @@ export class DashboardPage {
 
   async switchToGeneratorTab() {
     await this.generatorTab.click();
+    await this.generatorContent.waitFor({ state: "visible" });
   }
 
   async switchToKnowledgeBaseTab() {
-    await this.knowledgeBaseTab.click();
+    // Ensure the tab button is visible and clickable
+    await this.knowledgeBaseTab.waitFor({ state: "visible" });
+    await this.knowledgeBaseTab.click({ force: true });
+
+    // Wait for content to become visible
+    await this.knowledgeBaseContent.waitFor({ state: "visible", timeout: 15000 });
   }
 
   async generateFlashcards(text: string) {

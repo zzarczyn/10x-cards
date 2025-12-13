@@ -58,7 +58,10 @@ export function KnowledgeBaseTab() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+      <div
+        data-testid="flashcards-loading"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse"
+      >
         {[...Array(6)].map((_, i) => (
           <div key={i} className="h-[280px] bg-muted rounded-lg" />
         ))}
@@ -101,10 +104,10 @@ export function KnowledgeBaseTab() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {flashcards.map((card) => (
-          <FlashcardItem key={card.id} card={card} onEdit={handleEdit} onDelete={handleDelete} />
+    <div data-testid="knowledge-base-tab" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div data-testid="flashcards-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {flashcards.map((card, index) => (
+          <FlashcardItem key={card.id} card={card} index={index} onEdit={handleEdit} onDelete={handleDelete} />
         ))}
       </div>
 

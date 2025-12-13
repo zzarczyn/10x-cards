@@ -130,12 +130,35 @@ The project uses a comprehensive testing strategy covering unit tests, integrati
 
 **End-to-End Tests** (Playwright):
 - Test complete user workflows across the entire application
-- Run in real browsers (Chrome, Firefox, Safari)
+- Run in real browsers (Chromium)
 - Verify integration between frontend, backend, and external services
 - Critical for authentication, generator, and CRUD flows
 
+### Quick Start - E2E Tests
+
+**First time setup:**
+```bash
+# 1. Check if environment is ready
+npm run test:e2e:check
+
+# 2. Create .env.test file (copy from example)
+cp env.test.example .env.test
+
+# 3. Start dev server (in separate terminal)
+npm run dev
+
+# 4. Register test user at http://localhost:4321/auth/register
+#    Use credentials from .env.test (test@example.com / testpassword123)
+
+# 5. Run tests!
+npm run test:e2e:ui
+```
+
 **Quick Test Commands**:
 ```bash
+# Check E2E environment readiness
+npm run test:e2e:check
+
 # Run unit tests
 npm run test
 
@@ -145,14 +168,26 @@ npm run test:ui
 # Generate coverage report
 npm run test:coverage
 
-# Run E2E tests
+# Run E2E tests (headless)
 npm run test:e2e
 
-# Run E2E tests with UI
+# Run E2E tests with UI (recommended)
 npm run test:e2e:ui
+
+# Run E2E tests with visible browser
+npm run test:e2e:headed
+
+# Debug E2E tests step-by-step
+npm run test:e2e:debug
 ```
 
-For detailed testing strategy, see `.ai/test-plan.md`.
+**Testing Documentation:**
+- 🚀 **Quick Start:** See `E2E_QUICK_START.md` for 5-minute setup guide
+- 📋 **Detailed Setup:** See `E2E_READINESS_CHECK.md` for complete checklist
+- 📚 **E2E Guide:** See `e2e/README.md` for comprehensive E2E testing documentation
+- 🔐 **Authentication:** See `e2e/AUTHENTICATION.md` for auth testing strategies
+- 📖 **Test Setup:** See `TEST_SETUP.md` for overall testing configuration
+- 📝 **Test Plan:** See `.ai/test-plan.md` for detailed testing strategy
 
 ### API Endpoint Testing
 

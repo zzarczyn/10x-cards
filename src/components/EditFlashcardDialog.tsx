@@ -62,6 +62,7 @@ export function EditFlashcardDialog({ open, onOpenChange, flashcard, onSubmit }:
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div
+        data-testid="edit-flashcard-dialog"
         className="bg-background rounded-lg shadow-lg w-full max-w-md border overflow-hidden animate-in zoom-in-95 duration-200"
         role="dialog"
         aria-modal="true"
@@ -75,6 +76,7 @@ export function EditFlashcardDialog({ open, onOpenChange, flashcard, onSubmit }:
                 Przód (Pytanie)
               </label>
               <Textarea
+                data-testid="edit-flashcard-front-input"
                 id="edit-front"
                 value={front}
                 onChange={(e) => setFront(e.target.value)}
@@ -90,6 +92,7 @@ export function EditFlashcardDialog({ open, onOpenChange, flashcard, onSubmit }:
                 Tył (Odpowiedź)
               </label>
               <Textarea
+                data-testid="edit-flashcard-back-input"
                 id="edit-back"
                 value={back}
                 onChange={(e) => setBack(e.target.value)}
@@ -103,10 +106,16 @@ export function EditFlashcardDialog({ open, onOpenChange, flashcard, onSubmit }:
             {error && <div className="text-sm text-destructive bg-destructive/10 p-2 rounded">{error}</div>}
 
             <div className="flex justify-end gap-2 mt-6">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+              <Button
+                data-testid="edit-flashcard-cancel-btn"
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
                 Anuluj
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button data-testid="edit-flashcard-save-btn" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Zapisywanie..." : "Zapisz zmiany"}
               </Button>
             </div>

@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 
 /**
  * Playwright E2E Testing Configuration
@@ -7,6 +11,9 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   // Test directory
   testDir: "./e2e",
+
+  // Global setup - authenticate once and save state
+  globalSetup: "./e2e/global.setup.ts",
 
   // Fully parallel execution for faster runs
   fullyParallel: true,
@@ -26,7 +33,7 @@ export default defineConfig({
   // Shared test configuration
   use: {
     // Base URL for testing
-    baseURL: process.env.BASE_URL || "http://localhost:4321",
+    baseURL: process.env.BASE_URL || "http://localhost:3000",
 
     // Collect trace on first retry for debugging
     trace: "on-first-retry",
@@ -48,7 +55,11 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        // Use saved authentication state for all tests
+        storageState: "./e2e/.auth/user.json",
+      },
     },
   ],
 
@@ -57,7 +68,7 @@ export default defineConfig({
   webServer: process.env.CI
     ? {
         command: "npm run dev",
-        url: "http://localhost:4321",
+        url: "http://localhost:3000",
         reuseExistingServer: false,
         timeout: 120000,
       }

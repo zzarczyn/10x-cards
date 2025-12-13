@@ -154,6 +154,7 @@ export function LoginForm() {
           </label>
           <Input
             id="email"
+            data-testid="login-email-input"
             type="email"
             value={formState.email}
             onChange={(e) => handleEmailChange(e.target.value)}
@@ -178,6 +179,7 @@ export function LoginForm() {
           </label>
           <Input
             id="password"
+            data-testid="login-password-input"
             type="password"
             value={formState.password}
             onChange={(e) => handlePasswordChange(e.target.value)}
@@ -199,7 +201,13 @@ export function LoginForm() {
           </a>
         </div>
 
-        <Button type="submit" disabled={formState.isLoading} className="w-full" size="lg">
+        <Button
+          type="submit"
+          data-testid="login-submit-btn"
+          disabled={formState.isLoading}
+          className="w-full"
+          size="lg"
+        >
           {formState.isLoading ? (
             <>
               <svg

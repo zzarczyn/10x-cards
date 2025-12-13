@@ -119,15 +119,16 @@ export function RegisterForm() {
         body: JSON.stringify({
           email: formState.email,
           password: formState.password,
+          confirmPassword: formState.confirmPassword,
         }),
       });
 
       if (response.ok) {
         setFormState((prev) => ({ ...prev, isSuccess: true, isLoading: false }));
-        // Show success message for 3 seconds, then redirect
+        // Show success message for 2 seconds, then redirect to dashboard (auto-logged in)
         setTimeout(() => {
-          window.location.href = "/auth/login?message=registered";
-        }, 3000);
+          window.location.href = "/";
+        }, 2000);
       } else {
         const errorData = await response.json();
         setFormState((prev) => ({
@@ -173,8 +174,8 @@ export function RegisterForm() {
         </div>
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight">Konto utworzone!</h2>
-          <p className="text-sm text-muted-foreground">Sprawdź swoją skrzynkę email, aby potwierdzić adres.</p>
-          <p className="text-xs text-muted-foreground">Za chwilę zostaniesz przekierowany do strony logowania...</p>
+          <p className="text-sm text-muted-foreground">Twoje konto zostało pomyślnie utworzone.</p>
+          <p className="text-xs text-muted-foreground">Za chwilę zostaniesz przekierowany do aplikacji...</p>
         </div>
       </div>
     );
