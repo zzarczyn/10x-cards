@@ -17,8 +17,8 @@ Kompletna dokumentacja środowiska testowego dla projektu 10xCards.
 
 Projekt wykorzystuje dwa główne narzędzia testowe:
 
-- **Vitest** - testy jednostkowe i integracyjne
-- **Playwright** - testy end-to-end (E2E)
+- **Vitest** - testy jednostkowe i integracyjne,
+- **Playwright** - testy end-to-end (E2E),
 
 ## 🛠 Stack testowy
 
